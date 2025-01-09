@@ -109,7 +109,8 @@ return new class extends Migration
             $table->decimal('price', 18, 4)->default(0)->index();   
             $table->Integer('rating')->default(0)->index();
             $table->dateTime('published_date')->index();
-            $table->longText('description');
+            $table->longText('details')->nullable();
+            $table->longText('description')->nullable();
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
             $table->foreign('brand_id')->references('id')->on('brands'); 
