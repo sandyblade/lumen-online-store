@@ -1,5 +1,16 @@
 <?php
 
+/**
+* This file is part of the Sandy Andryanto Online Store Website.
+*
+* @author     Sandy Andryanto <sandy.andryanto.blade@gmail.com>
+* @copyright  2025
+*
+* For the full copyright and license information,
+* please view the LICENSE.md file that was distributed
+* with this source code.
+*/
+
 namespace App\Models;
 
 use Illuminate\Auth\Authenticatable;
@@ -21,7 +32,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var string[]
      */
     protected $fillable = [
-        'image', 
+        'image',
         'first_name',
         'last_name',
         'email',
@@ -44,4 +55,20 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'password',
         'remember_token'
     ];
+
+    public function Authentication() {
+        return $this->hasMany(Authentication::class);
+    }
+
+    public function Activity() {
+        return $this->hasMany(Activity::class);
+    }
+
+    public function Order() {
+        return $this->hasMany(Order::class);
+    }
+
+    public function ProductReview() {
+        return $this->hasMany(ProductReview::class);
+    }
 }

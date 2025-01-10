@@ -1,5 +1,16 @@
 <?php
 
+/**
+* This file is part of the Sandy Andryanto Online Store Website.
+*
+* @author     Sandy Andryanto <sandy.andryanto.blade@gmail.com>
+* @copyright  2025
+*
+* For the full copyright and license information,
+* please view the LICENSE.md file that was distributed
+* with this source code.
+*/
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -30,6 +41,20 @@ return new class extends Migration
             $table->engine = 'InnoDB';
         });
 
+        // users auth
+        Schema::create('authentications', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')->index();
+            $table->string('type', 64)->index();
+            $table->string('credential', 180)->index();
+            $table->string('token', 36)->index();
+            $table->tinyInteger('status')->default(0)->index();
+            $table->dateTime('expired_at')->index();
+            $table->timestamps();
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->engine = 'InnoDB';
+        });
+
         // categories
         Schema::create('categories', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -49,7 +74,7 @@ return new class extends Migration
             $table->timestamps();
             $table->engine = 'InnoDB';
         });
-        
+
         // sizes
         Schema::create('sizes', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -106,14 +131,13 @@ return new class extends Migration
             $table->unsignedBigInteger('brand_id')->index();
             $table->string('sku', 64)->index();
             $table->string('name', 255)->index();
-            $table->decimal('price', 18, 4)->default(0)->index();   
-            $table->Integer('rating')->default(0)->index();
+            $table->decimal('price', 18, 4)->default(0)->index();
             $table->dateTime('published_date')->index();
             $table->longText('details')->nullable();
             $table->longText('description')->nullable();
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
-            $table->foreign('brand_id')->references('id')->on('brands'); 
+            $table->foreign('brand_id')->references('id')->on('brands');
             $table->engine = 'InnoDB';
         });
 
@@ -122,8 +146,8 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('category_id');
             $table->primary(["product_id", "category_id"]);
-            $table->foreign('product_id')->references('id')->on('products'); 
-            $table->foreign('category_id')->references('id')->on('categories'); 
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('category_id')->references('id')->on('categories');
             $table->engine = 'InnoDB';
         });
 
@@ -135,7 +159,7 @@ return new class extends Migration
             $table->Integer('sort')->default(0)->index();
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
-            $table->foreign('product_id')->references('id')->on('products'); 
+            $table->foreign('product_id')->references('id')->on('products');
             $table->engine = 'InnoDB';
         });
 
@@ -148,8 +172,8 @@ return new class extends Migration
             $table->text('review');
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
-            $table->foreign('product_id')->references('id')->on('products'); 
-            $table->foreign('user_id')->references('id')->on('users'); 
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->engine = 'InnoDB';
         });
 
@@ -162,9 +186,9 @@ return new class extends Migration
             $table->Integer('stock')->default(0)->index();
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
-            $table->foreign('product_id')->references('id')->on('products'); 
-            $table->foreign('size_id')->references('id')->on('sizes'); 
-            $table->foreign('color_id')->references('id')->on('colours'); 
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('size_id')->references('id')->on('sizes');
+            $table->foreign('color_id')->references('id')->on('colours');
             $table->engine = 'InnoDB';
         });
 
@@ -175,14 +199,14 @@ return new class extends Migration
             $table->unsignedBigInteger('payment_id')->nullable()->index();
             $table->string('invoice_number', 64)->index();
             $table->Integer('total_item')->default(0)->index();
-            $table->decimal('subtotal', 18, 4)->default(0)->index();  
-            $table->decimal('total_taxes', 18, 4)->default(0)->index();  
-            $table->decimal('total_shipment', 18, 4)->default(0)->index();  
-            $table->decimal('total_paid', 18, 4)->default(0)->index();  
+            $table->decimal('subtotal', 18, 4)->default(0)->index();
+            $table->decimal('total_taxes', 18, 4)->default(0)->index();
+            $table->decimal('total_shipment', 18, 4)->default(0)->index();
+            $table->decimal('total_paid', 18, 4)->default(0)->index();
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users'); 
-            $table->foreign('payment_id')->references('id')->on('payments'); 
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('payment_id')->references('id')->on('payments');
             $table->engine = 'InnoDB';
         });
 
@@ -191,13 +215,13 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('order_id')->index();
             $table->unsignedBigInteger('product_inventory_id')->index();
-            $table->decimal('price', 18, 4)->default(0)->index();  
+            $table->decimal('price', 18, 4)->default(0)->index();
             $table->Integer('qty')->default(0)->index();
-            $table->decimal('total', 18, 4)->default(0)->index(); 
+            $table->decimal('total', 18, 4)->default(0)->index();
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
-            $table->foreign('order_id')->references('id')->on('orders'); 
-            $table->foreign('product_inventory_id')->references('id')->on('products_inventories'); 
+            $table->foreign('order_id')->references('id')->on('orders');
+            $table->foreign('product_inventory_id')->references('id')->on('products_inventories');
             $table->engine = 'InnoDB';
         });
 
@@ -210,7 +234,7 @@ return new class extends Migration
             $table->string('description', 255)->index();
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users'); 
+            $table->foreign('user_id')->references('id')->on('users');
             $table->engine = 'InnoDB';
         });
     }
@@ -221,6 +245,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
+        Schema::dropIfExists('authentications');
         Schema::dropIfExists('categories');
         Schema::dropIfExists('brands');
         Schema::dropIfExists('sizes');
