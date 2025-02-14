@@ -16,7 +16,7 @@
 	It’s essentially a digital version of a physical shop, accessible 24/7, designed for convenience and a wide reach.
 </p>
 
-<p>For Online Demo : <a target="_blank" href="https://online-store-demo-sandyblades-projects.vercel.app/">https://online-store-demo-sandyblades-projects.vercel.app</a></p>
+<p>For Online Demo : <a target="_blank" href="https://sandy-online-store.vercel.app/">https://sandy-online-store.vercel.app</a></p>
 
 # Preview
 
