@@ -20,7 +20,7 @@
 
 # Preview
 
-<img src="https://i.ibb.co.com/YNQcQ4D/home.png" alt="home" />
+<img src="https://5an9y4lf0n50.github.io/demo-images/online-store/home.png" alt="home" />
 
 
 # Features
@@ -137,15 +137,15 @@ npm run dev
 #### 8. Access application by entering [https://localhost:5173](https://localhost:5173) in the browser.
 
 <br/>
-<img src="https://i.ibb.co.com/59584Rp/store.png" alt="store" />
+<img src="https://5an9y4lf0n50.github.io/demo-images/online-store/store.png" alt="store" />
 </br>
-<img src="https://i.ibb.co.com/CPM5Xb6/product.png" alt="product" />
+<img src="https://5an9y4lf0n50.github.io/demo-images/online-store/product.png" alt="product" />
 </br>
-<img src="https://i.ibb.co.com/GxN6Pg1/checkout.png" alt="checkout" />
+<img src="https://5an9y4lf0n50.github.io/demo-images/online-store/checkout.png" alt="checkout" />
 </br>
-<img src="https://i.ibb.co.com/KjRRdgH/login.png" alt="login"/>
+<img src="https://5an9y4lf0n50.github.io/demo-images/online-store/login.png" alt="login"/>
 </br>
-<img src="https://i.ibb.co.com/wpX8yrg/register.png" alt="register" />
+<img src="https://5an9y4lf0n50.github.io/demo-images/online-store/register.png" alt="register" />
 
 
 #### 9. Developer Contact
