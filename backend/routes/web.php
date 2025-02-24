@@ -37,4 +37,17 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     # Sending Newsletter
     $router->post('newsletter/send', 'NewsLetterController@send');
 
+    # Primary Component
+    $router->get('home/component', 'HomeController@component');
+
+    # Home Page
+    $router->get('home/category', 'HomeController@category');
+    $router->get('home/newproduct', 'HomeController@newProduct');
+    $router->get('home/topselling', 'HomeController@topSelling');
+    $router->get('home/bestseller', 'HomeController@bestSeller');
+
+    # Shop Page
+    $router->get('shop/list', 'ShopController@list');
+    $router->get('shop/filter', 'ShopController@filter');
+
 });

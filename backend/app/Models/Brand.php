@@ -20,6 +20,7 @@ class Brand extends Model
     protected $table = "brands";
 
     protected $fillable = [
+        "image",
         "name",
         "description",
         "status"

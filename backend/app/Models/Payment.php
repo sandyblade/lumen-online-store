@@ -20,6 +20,7 @@ class Payment extends Model
     protected $table = "payments";
 
     protected $fillable = [
+        "image",
         "name",
         "description",
         "status"

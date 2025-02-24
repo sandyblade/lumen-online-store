@@ -24,5 +24,13 @@ class Setting extends Model
         "key_value"
     ];
 
+    public static function getAll(){
+        $result = [];
+        $settings = self::where("id", "<>", 0)->orderBy("key_name")->get();
+        foreach($settings as $setting){
+            $result[$setting->key_name] = $setting->key_value;
+        }
+        return $result;
+    }
 
 }

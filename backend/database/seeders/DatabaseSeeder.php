@@ -91,11 +91,16 @@ class DatabaseSeeder extends Seeder
 
         for($i = 1; $i <=9; $i++)
         {
+
+            $thumbnail = $this->ProductImages()[rand(0, 8)];
             $brand = Models\Brand::inRandomOrder()->first();
             $product = new Models\Product();
+            $product->image = $thumbnail;
             $product->brand_id = $brand->id;
             $product->sku = "P00".$i;
             $product->name = "Product ".$i;
+            $product->total_order = rand(100, 1000);
+            $product->total_rating = rand(100, 1000);
             $product->price = rand(100, 999);
             $product->published_date = date("Y-m-d");
             $product->description = $description;
@@ -153,11 +158,24 @@ class DatabaseSeeder extends Seeder
 
     private function CreateCategories()
     {
-        $items = ["Laptop", "Smartphone", "Camera", "Accessories", "Others"];
+        $items = [
+            "Laptop"        => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product01.png",
+            "Smartphone"    => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product02.png",
+            "Camera"        => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product03.png",
+            "Accessories"   => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product04.png",
+            "Others"        => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product05.png",
+        ];
 
-        foreach($items as $item)
+        $num = 1;
+        foreach($items as $image => $name)
         {
-            Models\Category::create(["name"=> $item, "status"=> 1]);
+            Models\Category::create([
+                "name"=> $name,
+                "image"=> $image,
+                "status"=> 1,
+                "displayed"=> $num <= 3 ? 1: 0
+            ]);
+            $num++;
         }
 
     }
@@ -214,18 +232,24 @@ class DatabaseSeeder extends Seeder
     private function CreateSetting()
     {
         $settings = [
-            "about"         => "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.",
-            "com.location"  => "West Java, Indonesia",
-            "com.phone"     => "+62-898-921-8470",
-            "com.email"     => "sandy.andryanto.blade@gmail.com",
-            "com.currency"  => "USD",
-            "img.hotdeal"   => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/hotdeal.png",
-            "img.logo"      => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/logo.png",
-            "img.app"       => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/app.png",
-            "img.shop1"     => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop01.png",
-            "img.shop2"     => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop02.png",
-            "img.shpp3"     => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop03.png",
-            "installed"     => 1
+            "about_section"         => "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.",
+            "com_location"          => "West Java, Indonesia",
+            "com_phone"             => "+62-898-921-8470",
+            "com_email"             => "sandy.andryanto.blade@gmail.com",
+            "com_currency"          => "USD",
+            "img_hotdeal"           => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/hotdeal.png",
+            "img_logo"              => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/logo.png",
+            "img_app"               => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/app.png",
+            "img_shop1"             => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop01.png",
+            "img_shop2"             => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop02.png",
+            "img_shpp3"             => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop03.png",
+            "installed"             => 1,
+            "hot_deal_title"        => "hot deal this week",
+            "hot_deal_description"  => "New Collection Up to 50% OFF",
+            "discount_active"       => 1,
+            "discount_value"        => 50,
+            "discount_start"        => date("Y-m-d H:i:s"),
+            "discount_end"          => date("Y-m-d H:i:s", strtotime("+7 day"))
         ];
 
         foreach($settings as $key => $value)
@@ -239,7 +263,7 @@ class DatabaseSeeder extends Seeder
     {
         return [
             "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product01.png",
-            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce//product02.png",
+            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product02.png",
             "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product03.png",
             "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product04.png",
             "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product05.png",

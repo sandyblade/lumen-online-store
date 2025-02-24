@@ -21,10 +21,13 @@ class Product extends Model
 
     protected $fillable = [
         "brand_id",
+        "image",
         "sku",
         "name",
         "name",
         "price",
+        "total_order",
+        "total_rating",
         "published_date",
         "description",
         "details"
@@ -48,6 +51,14 @@ class Product extends Model
 
     public function Categories() {
         return $this->belongsToMany(Category::class, "products_categories");
+    }
+
+    public function Wishlists() {
+        return $this->belongsToMany(User::class, "products_wishlists");
+    }
+
+    public function Carts() {
+        return $this->belongsToMany(Order::class, "orders_carts");
     }
 
 }

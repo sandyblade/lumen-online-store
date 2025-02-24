@@ -20,13 +20,15 @@ class Category extends Model
     protected $table = "categories";
 
     protected $fillable = [
+        "image",
         "name",
         "description",
-        "status"
+        "status",
+        "displayed"
     ];
 
     public function Products() {
-        return $this->belongsToMany(product::class, "products_categories");
+        return $this->belongsToMany(Product::class, "products_categories");
     }
 
 }

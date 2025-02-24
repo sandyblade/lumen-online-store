@@ -42,4 +42,11 @@ class Order extends Model
     public function OrderDetail() {
         return $this->hasMany(OrderDetail::class);
     }
+
+    public function Carts() {
+        return $this->belongsToMany(Product::class, "orders_carts");
+    }
+
+
+
 }

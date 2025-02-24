@@ -58,8 +58,10 @@ return new class extends Migration
         // categories
         Schema::create('categories', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('image', 255)->nullable()->index();
             $table->string('name', 100)->index();
             $table->text('description')->nullable();
+            $table->tinyInteger('displayed')->default(0)->index();
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
             $table->engine = 'InnoDB';
@@ -68,6 +70,7 @@ return new class extends Migration
         // brands
         Schema::create('brands', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('image', 255)->nullable()->index();
             $table->string('name', 100)->index();
             $table->text('description')->nullable();
             $table->tinyInteger('status')->default(0)->index();
@@ -118,6 +121,7 @@ return new class extends Migration
         // payments
         Schema::create('payments', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('image', 255)->nullable()->index();
             $table->string('name', 100)->index();
             $table->text('description')->nullable();
             $table->tinyInteger('status')->default(0)->index();
@@ -129,15 +133,28 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('brand_id')->index();
+            $table->string('image', 255)->nullable()->index();
             $table->string('sku', 64)->index();
             $table->string('name', 255)->index();
             $table->decimal('price', 18, 4)->default(0)->index();
+            $table->Integer('total_order')->default(0)->index();
+            $table->Integer('total_rating')->default(0)->index();
             $table->dateTime('published_date')->index();
             $table->longText('details')->nullable();
             $table->longText('description')->nullable();
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
             $table->foreign('brand_id')->references('id')->on('brands');
+            $table->engine = 'InnoDB';
+        });
+
+        // products_wishlists
+        Schema::create('products_wishlists', function (Blueprint $table) {
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('user_id');
+            $table->primary(["product_id", "user_id"]);
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->engine = 'InnoDB';
         });
 
@@ -225,6 +242,16 @@ return new class extends Migration
             $table->engine = 'InnoDB';
         });
 
+         // carts
+         Schema::create('orders_carts', function (Blueprint $table) {
+            $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('product_id');
+            $table->primary(["order_id", "product_id"]);
+            $table->foreign('order_id')->references('id')->on('orders');
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->engine = 'InnoDB';
+        });
+
         // activties
         Schema::create('activties', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -254,12 +281,14 @@ return new class extends Migration
         Schema::dropIfExists('settings');
         Schema::dropIfExists('payments');
         Schema::dropIfExists('products');
+        Schema::dropIfExists('products_wishlists');
         Schema::dropIfExists('products_categories');
         Schema::dropIfExists('products_images');
         Schema::dropIfExists('products_reviews');
         Schema::dropIfExists('products_inventories');
         Schema::dropIfExists('orders');
         Schema::dropIfExists('orders_details');
+        Schema::dropIfExists('orders_carts');
         Schema::dropIfExists('activties');
     }
 };
