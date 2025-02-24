@@ -219,12 +219,12 @@ class DatabaseSeeder extends Seeder
             "com.phone"     => "+62-898-921-8470",
             "com.email"     => "sandy.andryanto.blade@gmail.com",
             "com.currency"  => "USD",
-            "img.hotdeal"   => "https://i.ibb.co.com/prGN70n/hotdeal.png",
-            "img.logo"      => "https://i.ibb.co.com/xCcHLY9/logo.png",
-            "img.react"     => "https://i.ibb.co.com/n0S85sv/react.png",
-            "img.shop1"     => "https://i.ibb.co.com/w0C2BL8/shop01.png",
-            "img.shop2"     => "https://i.ibb.co.com/n6Yktzg/shop02.png",
-            "img.shpp3"     => "https://i.ibb.co.com/xLNj90z/shop03.png",
+            "img.hotdeal"   => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/hotdeal.png",
+            "img.logo"      => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/logo.png",
+            "img.app"       => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/app.png",
+            "img.shop1"     => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop01.png",
+            "img.shop2"     => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop02.png",
+            "img.shpp3"     => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop03.png",
             "installed"     => 1
         ];
 
@@ -238,15 +238,15 @@ class DatabaseSeeder extends Seeder
     private function ProductImages()
     {
         return [
-            "https://i.ibb.co.com/9G1VGD3/product01.png",
-            "https://i.ibb.co.com/jyy3K7K/product02.png",
-            "https://i.ibb.co.com/0qLD2KT/product03.png",
-            "https://i.ibb.co.com/nsRfS3s/product04.png",
-            "https://i.ibb.co.com/nMygJ4X/product05.png",
-            "https://i.ibb.co.com/bm2Hw5Z/product06.png",
-            "https://i.ibb.co.com/tYhgnVn/product07.png",
-            "https://i.ibb.co.com/hXTVmY1/product08.png",
-            "https://i.ibb.co.com/JvjBMY8/product09.png"
+            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product01.png",
+            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce//product02.png",
+            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product03.png",
+            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product04.png",
+            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product05.png",
+            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product06.png",
+            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product07.png",
+            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product08.png",
+            "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product09.png"
         ];
     }
 
