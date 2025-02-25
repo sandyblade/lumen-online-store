@@ -1,15 +1,15 @@
 <?php
 
 /**
-* This file is part of the Sandy Andryanto Online Store Website.
-*
-* @author     Sandy Andryanto <sandy.andryanto.blade@gmail.com>
-* @copyright  2025
-*
-* For the full copyright and license information,
-* please view the LICENSE.md file that was distributed
-* with this source code.
-*/
+ * This file is part of the Sandy Andryanto Online Store Website.
+ *
+ * @author     Sandy Andryanto <sandy.andryanto.blade@gmail.com>
+ * @copyright  2025
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE.md file that was distributed
+ * with this source code.
+ */
 
 namespace App\Models;
 
@@ -31,22 +31,28 @@ class Order extends Model
         "status"
     ];
 
-    public function User() {
+    public function User()
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function Payment() {
+    public function Payment()
+    {
         return $this->belongsTo(Payment::class, 'payment_id');
     }
 
-    public function OrderDetail() {
+    public function OrderDetail()
+    {
         return $this->hasMany(OrderDetail::class);
     }
 
-    public function Carts() {
-        return $this->belongsToMany(Product::class, "orders_carts");
+    public function OrderBilling()
+    {
+        return $this->hasMany(OrderBilling::class);
     }
 
-
-
+    public function Carts()
+    {
+        return $this->belongsToMany(Product::class, "orders_carts");
+    }
 }

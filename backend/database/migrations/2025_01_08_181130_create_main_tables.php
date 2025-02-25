@@ -1,15 +1,15 @@
 <?php
 
 /**
-* This file is part of the Sandy Andryanto Online Store Website.
-*
-* @author     Sandy Andryanto <sandy.andryanto.blade@gmail.com>
-* @copyright  2025
-*
-* For the full copyright and license information,
-* please view the LICENSE.md file that was distributed
-* with this source code.
-*/
+ * This file is part of the Sandy Andryanto Online Store Website.
+ *
+ * @author     Sandy Andryanto <sandy.andryanto.blade@gmail.com>
+ * @copyright  2025
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE.md file that was distributed
+ * with this source code.
+ */
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -200,7 +200,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id')->index();
             $table->unsignedBigInteger('size_id')->index();
             $table->unsignedBigInteger('color_id')->index();
-            $table->Integer('stock')->default(0)->index();
+            $table->unsignedInteger('stock')->default(0)->index();
             $table->tinyInteger('status')->default(0)->index();
             $table->timestamps();
             $table->foreign('product_id')->references('id')->on('products');
@@ -242,13 +242,24 @@ return new class extends Migration
             $table->engine = 'InnoDB';
         });
 
-         // carts
-         Schema::create('orders_carts', function (Blueprint $table) {
+        // carts
+        Schema::create('orders_carts', function (Blueprint $table) {
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('product_id');
             $table->primary(["order_id", "product_id"]);
             $table->foreign('order_id')->references('id')->on('orders');
             $table->foreign('product_id')->references('id')->on('products');
+            $table->engine = 'InnoDB';
+        });
+
+        // billings
+        Schema::create('orders_billings', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('order_id');
+            $table->string('name', 255)->index();
+            $table->text('description');
+            $table->tinyInteger('status')->default(0)->index();
+            $table->foreign('order_id')->references('id')->on('orders');
             $table->engine = 'InnoDB';
         });
 
@@ -289,6 +300,7 @@ return new class extends Migration
         Schema::dropIfExists('orders');
         Schema::dropIfExists('orders_details');
         Schema::dropIfExists('orders_carts');
+        Schema::dropIfExists('orders_billings');
         Schema::dropIfExists('activties');
     }
 };
