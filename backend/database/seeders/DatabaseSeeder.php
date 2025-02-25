@@ -131,7 +131,7 @@ class DatabaseSeeder extends Seeder
                 $pi->product_id = $product->id;
                 $pi->path = $path;
                 $pi->sort = ($in+1);
-                $pi->status = $in == 0 ? 1 : 0;
+                $pi->status = 1;
                 $pi->save();
             }
 
@@ -249,7 +249,8 @@ class DatabaseSeeder extends Seeder
             "discount_active"       => 1,
             "discount_value"        => 50,
             "discount_start"        => date("Y-m-d H:i:s"),
-            "discount_end"          => date("Y-m-d H:i:s", strtotime("+7 day"))
+            "discount_end"          => date("Y-m-d H:i:s", strtotime("+7 day")),
+            "taxes_value"           => 10
         ];
 
         foreach($settings as $key => $value)

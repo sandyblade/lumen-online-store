@@ -33,4 +33,9 @@ class Setting extends Model
         return $result;
     }
 
+    public static function getConfig($key){
+        $data = self::where("key_name", $key)->first();
+        return !is_null($data) ? $data->key_value : $key;
+    }
+
 }

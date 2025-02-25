@@ -26,8 +26,8 @@ class Colour extends Model
         "status"
     ];
 
-    public function ProductInvetory() {
-        return $this->hasMany(ProductInventory::class);
+    public function ProductInventory() {
+        return $this->hasMany(ProductInventory::class, "color_id");
     }
 
 }

@@ -217,6 +217,7 @@ return new class extends Migration
             $table->string('invoice_number', 64)->index();
             $table->Integer('total_item')->default(0)->index();
             $table->decimal('subtotal', 18, 4)->default(0)->index();
+            $table->decimal('total_discount', 18, 4)->default(0)->index();
             $table->decimal('total_taxes', 18, 4)->default(0)->index();
             $table->decimal('total_shipment', 18, 4)->default(0)->index();
             $table->decimal('total_paid', 18, 4)->default(0)->index();

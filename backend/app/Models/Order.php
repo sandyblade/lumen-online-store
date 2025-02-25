@@ -25,6 +25,7 @@ class Order extends Model
         "invoice_number",
         "total_item",
         "subtotal",
+        "total_discount",
         "total_taxes",
         "total_shipment",
         "total_paid",
