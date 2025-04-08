@@ -134,7 +134,7 @@ cd frontend
 npm run dev
 ```
 
-#### 8. Access application by entering [https://localhost:5173](https://localhost:5173) in the browser.
+#### 8. Access application by entering [https://localhost:5173](http://localhost:5173) in the browser.
 
 <br/>
 <img src="https://5an9y4lf0n50.github.io/demo-images/online-store/store.png" alt="store" />

@@ -1,30 +1,56 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+
+    import { Vue3Lottie } from 'vue3-lottie'
+    import LoaderJSON from './loader.json'
+    import { ref, onMounted } from 'vue'
+    
+    const loading = ref(true)
+    const connected = ref(false)
+    
+    onMounted(() => {
+        setTimeout(() => {
+            loading.value = false
+            connected.value = true
+        }, 3000)
+    })
+    
 </script>
 
-<template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
-</template>
-
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+  .error-section{
+    margin-top: 10rem;
+  }
 </style>
+
+
+<template>
+   <div v-if="loading">
+        <main class="flex-shrink-0 p-3 mb-5">
+            <div class="container loader-section">
+                <div class="row">
+                    <div class="col-md-5 mx-auto">
+                        <Vue3Lottie :animationData="LoaderJSON"  />
+                    </div>
+                </div>
+            </div>
+        </main>
+   </div>
+   <div v-else>
+        <div v-if="!connected">
+            <main class="flex-shrink-0 p-3 mb-5 error-section">
+                <div class="d-flex align-items-center justify-content-center">
+                    <div class="text-center">
+                        <h1 class="display fw-bold text-muted text-error-code"><i class="bi bi-wifi-off"></i></h1>
+                        <p class="fs-3"> <span class="text-danger">Opps!</span> Disconnected from server</p>
+                        <div class="lead">
+                            Sorry, An Http error has occurred. Please close the client and try again.
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <div v-else>
+            <h1>Connected</h1>
+        </div>
+   </div>
+</template>
