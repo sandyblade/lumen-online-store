@@ -3,7 +3,7 @@
     const author = "Sandy Andryanto"
 </script>
 <template>
-    <footer id="footer" class="footer mt-auto text-light">
+    <footer id="footer" class="footer text-light">
        <div class="section bg-black">
             <div class="container mt-2">
                 <div class="row">

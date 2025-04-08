@@ -40,7 +40,7 @@ function handleFilter(event){
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="header-search mt-1">
+                        <div class="header-search mt-3">
                             <div class="input-group">
                                 <button class="btn bg-dark dropdown-toggle"type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="text-white">All Categories<i class="bi bi-filter ms-2"></i></span>

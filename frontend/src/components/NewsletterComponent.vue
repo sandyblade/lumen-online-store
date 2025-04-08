@@ -1,5 +1,5 @@
 <template>
-    <main class="flex-shrink-0 p-5" id="newsletter">
+    <main class="flex-shrink-0 p-5  mt-auto" id="newsletter">
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mx-auto">

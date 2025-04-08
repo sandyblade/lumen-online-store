@@ -6,5 +6,6 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import '@fortawesome/fontawesome-free/css/all.min.css'
+import router from "./routes";
 
-createApp(App).use(Vue3Lottie).mount('#app')
+createApp(App).use(router).use(Vue3Lottie).mount('#app')
