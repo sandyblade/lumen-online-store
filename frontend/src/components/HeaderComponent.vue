@@ -1,6 +1,7 @@
 <script setup>
 
-    import { ref } from 'vue'
+    import { ref, onMounted } from 'vue'
+    import { Modal } from "bootstrap";
 
     defineProps({
         logged: Boolean,
@@ -9,9 +10,28 @@
     const fliterSelected = ref(0)
     const filters = ["All Categories", "Laptop", "Accessories", "Camera", "Earphone"]
 
+    let modalWishlist = ref(null)
+    let modalCart = ref(null)
+    let objWishlist = null
+    let objCart = null
+
+    onMounted(() => {
+        objWishlist = new Modal(modalWishlist.value)
+        objCart = new Modal(modalCart.value)
+    })
+
     function handleFilter(index){
         fliterSelected.value = index
     }
+
+    function showModalWishlist(){
+        objWishlist.show();
+    }
+
+    function showModalCart(){
+        objCart.show();
+    }
+    
 
 </script>
 
@@ -63,7 +83,7 @@
                     <div class="col-md-3 clearfix"> 
                        <div class="header-ctn">
                             <div class="position-relative">
-                                <a href="#" class="text-center text-decoration-none fw-bold">
+                                <a href="#" @click="showModalWishlist" class="text-center text-decoration-none fw-bold">
                                     <i class="bi bi-heart mb-2"></i>
                                     <span class='d-block'>Your Wishlist</span>
                                 </a>
@@ -73,13 +93,13 @@
                                 </span>
                             </div>
                             <div class="position-relative">
-                                <a href="#" class="text-center text-decoration-none fw-bold">
+                                <a href="#" @click="showModalCart" class="text-center text-decoration-none fw-bold">
                                     <i class="bi bi-cart mb-2"></i>
                                     <span class='d-block'>Your Cart</span>
                                 </a>
                                 <span class="position-absolute top-0 ms-3 start-50 translate-middle badge rounded-pill bg-danger">
-                                    2
-                                    <span class="visually-hidden">New Wishlist</span>
+                                    3
+                                    <span class="visually-hidden">Your Cart</span>
                                 </span>
                             </div>
                        </div>
@@ -88,4 +108,104 @@
             </div>
         </div>
    </header>
+
+   <div class="modal fade" tabindex="-1" ref="modalWishlist">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"> <i class="bi bi-heart me-1"></i>My Wishlist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-center">
+                            <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product01.png" class='img-thumbnail img-responsive' width="100" alt=""/>
+                        </div>
+                        <div class="col-md-8">
+                            <a href="#" class="text-decoration-none text-uppercase text-muted d-block">
+                                <strong>product name goes here</strong>
+                            </a>
+                            <h5>$980.00</h5>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-center">
+                            <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product02.png" class='img-thumbnail img-responsive' width="100" alt=""/>
+                        </div>
+                        <div class="col-md-8">
+                            <a href="#" class="text-decoration-none text-uppercase text-muted d-block">
+                                <strong>product name goes here</strong>
+                            </a>
+                            <h5>$1960.00</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" ref="modalCart">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"> <i class="bi bi-cart me-1"></i>My Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-center">
+                            <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product01.png" class='img-thumbnail img-responsive' width="100" alt=""/>
+                        </div>
+                        <div class="col-md-8">
+                            <a href="#" class="text-decoration-none text-uppercase text-muted d-block">
+                                <strong>product name goes here</strong>
+                            </a>
+                            <span class='d-block mb-2'>
+                                1 x <strong>$980.00</strong>
+                            </span>
+                            <h5>$980.00</h5>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-center">
+                            <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product02.png" class='img-thumbnail img-responsive' width="100" alt=""/>
+                        </div>
+                        <div class="col-md-8">
+                            <a href="#" class="text-decoration-none text-uppercase text-muted d-block">
+                                <strong>product name goes here</strong>
+                            </a>
+                            <span class='d-block mb-2'>
+                                2 x <strong>$980.00</strong>
+                            </span>
+                            <h5>$1960.00</h5>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4 text-center">
+                            <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product03.png" class='img-thumbnail img-responsive' width="100" alt=""/>
+                        </div>
+                        <div class="col-md-8">
+                            <a href="#" class="text-decoration-none text-uppercase text-muted d-block">
+                                <strong>product name goes here</strong>
+                            </a>
+                            <span class='d-block mb-2'>
+                                3 x <strong>$980.00</strong>
+                            </span>
+                            <h5>$2940.00</h5>
+                        </div>
+                    </div>
+                    <div class="cart-summary">
+                        <small>3 Item(s) selected</small>
+                        <h5>SUBTOTAL: $5880.00</h5>
+                    </div>
+                    <div class="cart-btns">
+                        <a href="#" class="text-decoration-none">View Cart <i class="bi bi-cart ms-1"></i></a>
+                        <a href="#" class="text-decoration-none">Checkout <i class="bi bi-arrow-right-circle ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </template>

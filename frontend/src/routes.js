@@ -7,11 +7,10 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage.vue"
 import HomePage from "./pages/HomePage.vue"
 import LoginPage from "./pages/LoginPage.vue"
 import PasswordPage from "./pages/PasswordPage.vue"
-import ProductPage from "./pages/ProductPage.vue"
 import ProfilePage from "./pages/ProfilePage.vue"
 import RegisterPage from "./pages/RegisterPage.vue"
 import ResetPasswordPage from "./pages/ResetPasswordPage.vue"
-import StorePage from "./pages/StorePage.vue"
+
 
 const routes = [
     {
@@ -21,7 +20,7 @@ const routes = [
         meta: { layout: AppComponent },
     },
     {
-        path: "/checkout/:id",
+        path: "/checkout",
         name: "Checkout",
         component: CheckoutPage,
         meta: { layout: AppComponent },
@@ -63,12 +62,6 @@ const routes = [
         meta: { layout: AppComponent },
     },
     {
-        path: "/product/:id",
-        name: "Product",
-        component: ProductPage,
-        meta: { layout: AppComponent },
-    },
-    {
         path: "/account/profile",
         name: "AccountProfile",
         component: ProfilePage,
@@ -84,12 +77,6 @@ const routes = [
         path: "/auth/email/reset/:token",
         name: "ResetPassword",
         component: ResetPasswordPage,
-        meta: { layout: AppComponent },
-    },
-    {
-        path: "/store",
-        name: "Store",
-        component: StorePage,
         meta: { layout: AppComponent },
     },
 ]

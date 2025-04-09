@@ -57,7 +57,7 @@
                 </div>
             </div>
        </div>
-       <div id="bottom-footer" class="section bg-dark p-5">
+       <div id="bottom-footer" class="section bg-dark p-5 text-center">
           <div class="container mt-3">
             <div class="row">
               <div class="col-md-12 text-class">

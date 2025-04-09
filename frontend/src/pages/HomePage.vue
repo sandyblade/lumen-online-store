@@ -1,3 +1,7 @@
+<script setup>
+    import SliderComponent from '../components/SliderComponent.vue'
+    import BestSellerComponent from '../components/BestSellerComponent.vue'
+</script>
 <template>
    <main class="flex-shrink-0">
       <div class="container">
@@ -56,6 +60,9 @@
                         </ul>
                     </div>
                 </div>
+            </div>  
+            <div class="col-md-12">
+                <SliderComponent />
             </div>
         </div>
       </div>    
@@ -115,7 +122,40 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-12">
+                <SliderComponent />
+            </div>
         </div>
       </div>    
+   </main>
+   <main class="flex-shrink-0 mt-5" id="best-seller">
+      <div class="container p-3">
+         <div class="row">
+            <div class="col-md-4">
+                <div class="section-title text-center">
+                    <h5 class="title">Best Seller</h5>
+                </div>
+                <div class="slider-container">
+                    <BestSellerComponent/>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="section-title text-center">
+                    <h5 class="title">Best Seller</h5>
+                </div>
+                <div class="slider-container">
+                    <BestSellerComponent/>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="section-title text-center">
+                    <h5 class="title">Best Seller</h5>
+                </div>
+                <div class="slider-container">
+                    <BestSellerComponent/>
+                </div>
+            </div>
+         </div>
+      </div>
    </main>
 </template>

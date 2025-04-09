@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import './style.css'
+import './timeline.css'
 import Vue3Lottie from 'vue3-lottie'
 import App from './App.vue'
 import "bootstrap/dist/css/bootstrap.min.css"
