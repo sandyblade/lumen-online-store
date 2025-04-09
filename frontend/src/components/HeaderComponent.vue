@@ -1,12 +1,17 @@
 <script setup>
 
-defineProps({
-    logged: Boolean,
-})
+    import { ref } from 'vue'
 
-function handleFilter(event){
-    console.log(event)
-}
+    defineProps({
+        logged: Boolean,
+    })
+
+    const fliterSelected = ref(0)
+    const filters = ["All Categories", "Laptop", "Accessories", "Camera", "Earphone"]
+
+    function handleFilter(index){
+        fliterSelected.value = index
+    }
 
 </script>
 
@@ -22,9 +27,9 @@ function handleFilter(event){
                     </ul>
                     <ul class="header-links float-end p-0 header-account">
                         <li><a href="#"><i class="bi bi-currency-dollar me-1 mb-1 text-primary"></i> USD</a></li>
-                        <li><a href="#"><i class="bi bi-person-plus me-1 mb-1 text-primary"></i> My Account</a></li>
-                        <li><a href="#"><i class="bi bi-person-circle me-1 mb-1 text-primary"></i> Login</a></li>
-                        <li><a href="#"><i class="bi bi-person-fill-add me-1 mb-1 text-primary"></i> Register</a></li>
+                        <li><router-link to="/account/profile" ><i class="bi bi-person-plus me-1 mb-1 text-primary"></i> My Account</router-link></li>
+                        <li><router-link to="/auth/login"><i class="bi bi-person-circle me-1 mb-1 text-primary"></i> Login</router-link></li>
+                        <li><router-link to="/auth/register"><i class="bi bi-person-fill-add me-1 mb-1 text-primary"></i> Register</router-link></li>
                     </ul>
                 </div>
             </div>
@@ -34,23 +39,19 @@ function handleFilter(event){
                 <div class="row">
                     <div class="col-md-3">
                         <div class="header-logo">
-                            <a href="#" class="logo">
+                            <router-link to="/" class="logo">
                                 <img src="/logo.png" alt="logo" />
-                            </a>
+                            </router-link>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="header-search mt-3">
                             <div class="input-group">
                                 <button class="btn bg-dark dropdown-toggle"type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="text-white">All Categories<i class="bi bi-filter ms-2"></i></span>
+                                    <span class="text-white"><i class="bi bi-cart me-1"></i>{{ filters[fliterSelected] }}</span>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" @click="(event) => handleFilter(event)" >All Categories</a></li>
-                                    <li><a class="dropdown-item" href="#" @click="(event) => handleFilter(event)">Laptop</a></li>
-                                    <li><a class="dropdown-item" href="#" @click="(event) => handleFilter(event)">Accessories</a></li>
-                                    <li><a class="dropdown-item" href="#" @click="(event) => handleFilter(event)">Camera</a></li>
-                                    <li><a class="dropdown-item" href="#" @click="(event) => handleFilter(event)">Earphone</a></li>
+                                    <li v-for="(filter, index) in filters"><a class="dropdown-item" href="#" @click="handleFilter(index)" >{{ filter }}</a></li>
                                 </ul>
                                 <input type="text"  placeholder='Search here..' class="form-control" aria-label="Text input with dropdown button">
                                 <button class="btn bg-dark" type="button" >

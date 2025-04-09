@@ -57,11 +57,11 @@
                 </div>
             </div>
        </div>
-       <div id="bottom-footer" className="section bg-dark p-5">
-          <div className="container mt-3">
-            <div className="row">
-              <div className="col-md-12 text-center">
-                <ul className="footer-payments">
+       <div id="bottom-footer" class="section bg-dark p-5">
+          <div class="container mt-3">
+            <div class="row">
+              <div class="col-md-12 text-class">
+                <ul class="footer-payments">
                   <li><a href="#"><i class="fab fa-cc-visa me-2 text-white"></i></a></li>
                   <li><a href="#"><i class="bi bi-credit-card me-2 text-white"></i></a></li>
                   <li><a href="#"><i class="bi bi-paypal me-2 text-white"></i></a></li>
@@ -69,8 +69,8 @@
                   <li><a href="#"><i class="fab fa-cc-discover  me-2 text-white"></i></a></li>
                   <li><a href="#"><i class="fab fa-cc-amex me-2 text-white"></i></a></li>
                 </ul>
-                <span className="copyright">
-                  Copyright {{ nowYear }} All rights reserved | This template is made with <i class="bi bi-heart mx-1 text-white"></i> by <a className='text-white' href="https://github.com/sandyblade" target="_blank">{{ author }}</a>
+                <span class="copyright">
+                  Copyright {{ nowYear }} All rights reserved | This template is made with <i class="bi bi-heart mx-1 text-white"></i> by <a class='text-white' href="https://github.com/sandyblade" target="_blank">{{ author }}</a>
                 </span>
               </div>
             </div>

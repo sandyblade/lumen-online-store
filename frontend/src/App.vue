@@ -1,7 +1,7 @@
 <script setup>
 
     import { Vue3Lottie } from 'vue3-lottie'
-    import LoaderJSON from './loader.json'
+    import LoaderJSON from './animations/loader.json'
     import AppComponent from './components/AppComponent.vue'
     import { ref, onMounted } from 'vue'
     
@@ -28,7 +28,7 @@
       <main class="flex-shrink-0 p-3 mb-5">
         <div class="container loader-section">
           <div class="row">
-            <div class="col-md-5 mx-auto">
+            <div class="col-md-5 mt-5 mx-auto">
               <Vue3Lottie :animationData="LoaderJSON"  />
             </div>
           </div>

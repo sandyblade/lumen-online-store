@@ -315,6 +315,11 @@
   background-color: transparent;
 }
 
+.main-nav>a.active {
+  color: #0d6efd !important;
+}
+
+.main-nav>a.active:after,
 .main-nav>a:after {
   content: "";
   display: block;
@@ -325,6 +330,7 @@
   transition: 0.2s all;
 }
 
+.main-nav>a.active:after,
 .main-nav>a:hover:after,
 .main-nav>a:focus:after,
 .main-nav>.active>a:after {
@@ -395,7 +401,6 @@
   border-bottom: 3px solid #0d6efd;
   margin-top: 30px;
 }
-
 
 .newsletter p {
   font-size: 24px;
@@ -480,4 +485,8 @@ ol.breadcrumb {
 
 .header-account a.active {
   color: #0d6efd !important;
+}
+
+.input-group-password:hover {
+  cursor: pointer !important;
 }
