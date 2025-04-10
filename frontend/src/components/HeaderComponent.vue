@@ -34,11 +34,11 @@
         objCart.show();
     }
     
-    function redirectTo(url) {
+    function redirectTo(e, url) {
+        e.preventDefault();
+        e.stopImmediatePropagation()
         objCart.hide();
-        setTimeout(() => {
-            router.push(url) 
-        })
+        setTimeout(() => { router.push(url) })
     }
     
 
@@ -208,8 +208,8 @@
                         <h5>SUBTOTAL: $5880.00</h5>
                     </div>
                     <div class="cart-btns">
-                        <a href="#" @click="redirectTo('/cart')" class="text-decoration-none">View Cart <i class="bi bi-cart ms-1"></i></a>
-                        <a href="#" @click="redirectTo('/checkout')" class="text-decoration-none">Checkout <i class="bi bi-arrow-right-circle ms-1"></i></a>
+                        <a href="#" @click="(event) => redirectTo(event, '/cart')"   class="text-decoration-none">View Cart <i class="bi bi-cart ms-1"></i></a>
+                        <a href="#" @click="(event) => redirectTo(event, '/checkout')" class="text-decoration-none">Checkout <i class="bi bi-arrow-right-circle ms-1"></i></a>
                     </div>
                 </div>
             </div>
