@@ -26,6 +26,6 @@
     <NewsletterComponent />
     <FooterComponent />
     <a @click="clickToTop" v-if="y > 300" href="#" class="btn btn-lg btn-primary back-to-top">
-        <h1><i class="bi bi-arrow-up-circle"></i></h1>
+        <i class="bi bi-chevron-up"></i>
     </a>
 </template>

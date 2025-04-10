@@ -19,6 +19,8 @@
     "bootstrap-icons": "^1.11.3",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
+    "vue-slider-component": "^3.2.24",
+    "vue-star-rating": "^2.1.0",
     "vue3-carousel": "^0.15.0",
     "vue3-lottie": "^3.3.1"
   },

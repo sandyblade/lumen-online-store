@@ -14,8 +14,8 @@ defineProps({
             </button>
             <div class="navbar-collapse" id="basic-navbar-nav">
                 <div class="main-nav navbar-nav">
-                    <a class="nav-link active" href="#">Home</a>
-                    <a class="nav-link" href="#">Hot Deals</a>
+                    <router-link to="/" class="nav-link">Home</router-link>
+                    <router-link to="/store" class="nav-link">Hot Deals</router-link>
                     <a class="nav-link" href="#">Categories</a>
                     <a class="nav-link" href="#">Laptops</a>
                     <a class="nav-link" href="#">Smartphones</a>

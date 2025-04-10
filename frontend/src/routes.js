@@ -1,5 +1,6 @@
 import { createWebHistory, createRouter } from "vue-router";
 import AppComponent from "./components/AppComponent.vue"
+import CartPage from "./pages/CartPage.vue"
 import CheckoutPage from "./pages/CheckoutPage.vue"
 import ConfirmPage from "./pages/ConfirmPage.vue"
 import ErrorPage from "./pages/ErrorPage.vue"
@@ -10,7 +11,7 @@ import PasswordPage from "./pages/PasswordPage.vue"
 import ProfilePage from "./pages/ProfilePage.vue"
 import RegisterPage from "./pages/RegisterPage.vue"
 import ResetPasswordPage from "./pages/ResetPasswordPage.vue"
-
+import StorePage from "./pages/StorePage.vue"
 
 const routes = [
     {
@@ -23,6 +24,12 @@ const routes = [
         path: "/checkout",
         name: "Checkout",
         component: CheckoutPage,
+        meta: { layout: AppComponent },
+    },
+    {
+        path: "/cart",
+        name: "Cart",
+        component: CartPage,
         meta: { layout: AppComponent },
     },
     {
@@ -77,6 +84,12 @@ const routes = [
         path: "/auth/email/reset/:token",
         name: "ResetPassword",
         component: ResetPasswordPage,
+        meta: { layout: AppComponent },
+    },
+    {
+        path: "/store",
+        name: "Store",
+        component: StorePage,
         meta: { layout: AppComponent },
     },
 ]

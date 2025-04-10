@@ -70,6 +70,9 @@
                                 <i class="bi bi-eye"></i>
                             </button>
                         </div>
+                        <button class="btn btn-primary w-100 mt-4">
+                            <i class="bi bi-cart-plus me-1"></i> Add To Cart
+                        </button>
                     </div>
                 </div>
             </Slide>

@@ -21,9 +21,9 @@
                 <div class="lead">
                     Sorry, the page you're looking for doesn't exist. If you think something is broken, report a problem.
                 </div>
-                <a href="#" class="btn btn-primary w-25 mt-3">
+                <router-link to="/" class="btn btn-primary w-25 mt-3">
                     <i class="bi-house me-2"></i>Back To Home
-                </a>
+                </router-link>
             </div>
         </div>
     </main>

@@ -1,12 +1,14 @@
 <script setup>
 
     import { ref, onMounted } from 'vue'
-    import { Modal } from "bootstrap";
+    import { Modal } from "bootstrap"
+    import { useRouter } from 'vue-router'
 
     defineProps({
         logged: Boolean,
     })
 
+    const router = useRouter()
     const fliterSelected = ref(0)
     const filters = ["All Categories", "Laptop", "Accessories", "Camera", "Earphone"]
 
@@ -30,6 +32,13 @@
 
     function showModalCart(){
         objCart.show();
+    }
+    
+    function redirectTo(url) {
+        objCart.hide();
+        setTimeout(() => {
+            router.push(url) 
+        })
     }
     
 
@@ -199,8 +208,8 @@
                         <h5>SUBTOTAL: $5880.00</h5>
                     </div>
                     <div class="cart-btns">
-                        <a href="#" class="text-decoration-none">View Cart <i class="bi bi-cart ms-1"></i></a>
-                        <a href="#" class="text-decoration-none">Checkout <i class="bi bi-arrow-right-circle ms-1"></i></a>
+                        <a href="#" @click="redirectTo('/cart')" class="text-decoration-none">View Cart <i class="bi bi-cart ms-1"></i></a>
+                        <a href="#" @click="redirectTo('/checkout')" class="text-decoration-none">Checkout <i class="bi bi-arrow-right-circle ms-1"></i></a>
                     </div>
                 </div>
             </div>
