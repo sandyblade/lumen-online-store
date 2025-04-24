@@ -122,10 +122,9 @@ npm install
 
 #### 6. Make a .env.local file and customize its settings 
 ```shell
-VUE_APP_TITLE="My Store"
-VUE_APP_AUTHOR="John Doe"
-VUE_APP_DESCRIPTION="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
-VUE_APP_BACKEND_URL="http://localhost:8000"
+VITE_APP_TITLE="Elector Store"
+VITE_APP_AUTHOR="Sandy Andryanto"
+VITE_APP_BACKEND_URL="http://localhost:8000"
 ```
 
 #### 7. Run Application 

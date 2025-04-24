@@ -4,15 +4,24 @@
     import LoaderJSON from './animations/loader.json'
     import AppComponent from './components/AppComponent.vue'
     import { ref, onMounted } from 'vue'
+    import service from './services'
     
     const loading = ref(true)
     const connected = ref(false)
     
+    
     onMounted(() => {
-        setTimeout(() => {
-            loading.value = false
-            connected.value = true
+      service.ping().then(() => { 
+        setTimeout(() => { 
+          loading.value = false
+          connected.value = true
         }, 3000)
+      })
+      .catch((error) => {
+        console.log(error)
+        loading.value = false
+        connected.value = false
+      });
     })
     
 </script>

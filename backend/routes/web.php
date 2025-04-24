@@ -19,6 +19,10 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => 'api'], function () use ($router) {
 
+    $router->get('/ping', function () use ($router) {
+        return response()->json(['status' => true, 'message' => 'Connected Established !!']);
+    });
+
     # Authentication Section
     $router->post('auth/login', 'AuthController@login');
     $router->post('auth/register', 'AuthController@register');

@@ -1,10 +1,28 @@
 <script setup>
 
     import { ref } from 'vue'
+    import { Form } from 'vee-validate'
+    import * as yup from 'yup'
 
     const nowYear = new Date().getFullYear()
     const showPassword = ref(false)
+    const form = ref(null)
+    
+    const schema = yup.object().shape({
+        email: yup.string().email().required(),
+        password: yup.string().required().min(6),
+    })
 
+    const formData = ref({
+        email: '',
+        password: ''
+    })
+
+    const submit = (values) => {
+        // implement your logic here
+        console.log(values)
+    }
+   
     function setShowPassword() {
         showPassword.value = !showPassword.value    
     }
@@ -41,13 +59,13 @@
                                       <small>Please sign in with your e-mail address and correct password.</small>
                                   </p>
                             </div>
-                            <form>
+                            <form ref="form" :validation-schema="schema" @submit="submit" :initial-values="formData">
                                 <div class="mb-3 mt-2">
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">
                                             <i class="bi-envelope"></i>
                                         </span>
-                                        <input type="email" name="email" class="form-control" placeholder="Email Address" required />
+                                        <input type="email" v-model="formData.email" class="form-control" placeholder="Email Address" required />
                                     </div>
                                 </div>
                                 <div class="mb-3 mt-2">

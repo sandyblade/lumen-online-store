@@ -11,6 +11,8 @@
     const router = useRouter()
     const fliterSelected = ref(0)
     const filters = ["All Categories", "Laptop", "Accessories", "Camera", "Earphone"]
+    const auth_logged = localStorage.getItem('auth_token') !== null
+    const auth_user = localStorage.getItem('auth_user')
 
     let modalWishlist = ref(null)
     let modalCart = ref(null)
@@ -50,15 +52,15 @@
             <div class="container py-2">
                 <div class='clearfix'>
                     <ul class="header-links float-start p-0">
-                        <li><a href="https://wa.me/628989218470"><i class="bi bi-telephone-outbound me-1 mb-1 text-primary"></i> +62-898-921-8470</a></li>
-                        <li><a href="#"><i class="bi bi-envelope me-1 mb-1 text-primary"></i> sandy.andryanto.blade@gmail.com</a></li>
-                        <li><a href="#"><i class="bi bi-pin-map me-1 mb-1 text-primary"></i> West Java, Indonesia</a></li>
+                        <li><a href="https://wa.me/628989218470"><i class="bi bi-telephone-outbound me-1 mb-1 text-primary"></i>+628989218470</a></li>
+                        <li v-if="auth_logged"><a href="#"><i class="bi bi-envelope me-1 mb-1 text-primary"></i> {{ auth_user.first_name }} {{ auth_user.last_name }}</a></li>
+                        <li v-if="auth_logged"><a href="#"><i class="bi bi-pin-map me-1 mb-1 text-primary"></i> {{ auth_user.city }}, {{ auth_user.country }}</a></li>
                     </ul>
                     <ul class="header-links float-end p-0 header-account">
                         <li><a href="#"><i class="bi bi-currency-dollar me-1 mb-1 text-primary"></i> USD</a></li>
-                        <li><router-link to="/account/profile" ><i class="bi bi-person-plus me-1 mb-1 text-primary"></i> My Account</router-link></li>
-                        <li><router-link to="/auth/login"><i class="bi bi-person-circle me-1 mb-1 text-primary"></i> Login</router-link></li>
-                        <li><router-link to="/auth/register"><i class="bi bi-person-fill-add me-1 mb-1 text-primary"></i> Register</router-link></li>
+                        <li v-if="auth_logged"><router-link to="/account/profile" ><i class="bi bi-person-plus me-1 mb-1 text-primary"></i> My Account</router-link></li>
+                        <li v-if="!auth_logged"><router-link to="/auth/login"><i class="bi bi-person-circle me-1 mb-1 text-primary"></i> Login</router-link></li>
+                        <li v-if="!auth_logged"><router-link to="/auth/register"><i class="bi bi-person-fill-add me-1 mb-1 text-primary"></i> Register</router-link></li>
                     </ul>
                 </div>
             </div>
@@ -90,7 +92,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 clearfix"> 
-                       <div class="header-ctn">
+                       <div class="header-ctn" v-if="auth_logged">
                             <div class="position-relative">
                                 <a href="#" @click="showModalWishlist" class="text-center text-decoration-none fw-bold">
                                     <i class="bi bi-heart mb-2"></i>
