@@ -1,13 +1,13 @@
 <script setup>
 
     import { ref } from 'vue'
-    import { Form } from 'vee-validate'
+    import { Form, ErrorMessage  } from 'vee-validate'
     import * as yup from 'yup'
 
     const nowYear = new Date().getFullYear()
     const showPassword = ref(false)
-    const form = ref(null)
     
+       
     const schema = yup.object().shape({
         email: yup.string().email().required(),
         password: yup.string().required().min(6),
@@ -59,13 +59,18 @@
                                       <small>Please sign in with your e-mail address and correct password.</small>
                                   </p>
                             </div>
-                            <form ref="form" :validation-schema="schema" @submit="submit" :initial-values="formData">
+                            <Form ref="form" :validation-schema="schema" @submit="submit" :initial-values="formData">
                                 <div class="mb-3 mt-2">
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">
                                             <i class="bi-envelope"></i>
                                         </span>
                                         <input type="email" v-model="formData.email" class="form-control" placeholder="Email Address" required />
+                                        <ErrorMessage name="email" v-slot="{ message }">
+                                            <div class="invalid-feedback">
+                                                {{ message }}
+                                            </div>
+                                        </ErrorMessage>
                                     </div>
                                 </div>
                                 <div class="mb-3 mt-2">
@@ -77,6 +82,11 @@
                                         <span class="input-group-text input-group-password"  @click="setShowPassword()">
                                             <i :class="showPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
                                         </span>
+                                        <ErrorMessage name="password" v-slot="{ message }">
+                                            <div class="invalid-feedback">
+                                                {{ message }}
+                                            </div>
+                                        </ErrorMessage>
                                     </div>
                                 </div>
                                 <div class="clearfix mb-3">
@@ -94,7 +104,7 @@
                                 <button type="submit" class="btn btn-primary border w-100 mt-2" title="Click here to sign in">
                                     <i class="bi-box-arrow-right me-2"></i>Sign In Now
                                 </button>
-                            </form>
+                            </Form>
                             <div class="text-center mt-3">
                                 <small>Don't have an account ? <router-link to="/auth/register">Sign Up Now</router-link></small>
                             </div>
