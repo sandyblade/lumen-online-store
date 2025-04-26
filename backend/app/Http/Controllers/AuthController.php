@@ -54,16 +54,29 @@ class AuthController extends AppController
     {
         
         $this->validate($request, [
+            'name' => 'required|min:3',
             'email' => 'required|email|max:180|unique:users',
             'password' => 'required|min:6|confirmed',
         ]);
 
         $faker = Faker::create();
+        $name = $request->input('name');
         $email = $request->input('email');
         $password = $request->input('password');
         $token = $faker->uuid();
+        $names = explode(" ", $name);
 
         $user = new User();
+
+        if(count($names) > 1){
+            $last_name = array_slice($names, 1, (count($names) - 1));
+            $last_name = implode(" ", $last_name);
+            $user->first_name = $names[0];
+            $user->last_name = $last_name;
+        }else{
+            $user->first_name = $names[0];
+        }
+
         $user->email = $email;
         $user->password = Hash::make($password);
         $user->status = 0;
@@ -79,7 +92,13 @@ class AuthController extends AppController
         $verification->save();
 
         $this->activity($user->id, "Sign Up", "Sign Up To Application", "Your has been registered in an application.");
-        return response()->json(['message' => 'You need to confirm your account. We have sent you an activation code, please check your email.']);
+
+        $payload = [
+            'message' => 'You need to confirm your account. We have sent you an activation code, please check your email.',
+            'token'=> $token
+        ];
+
+        return response()->json($payload);
     }
 
     public function confirm($token)
@@ -159,7 +178,10 @@ class AuthController extends AppController
         $reset->save();
 
         $this->activity($user->id, "Reset Password", "Send Request Reset Password", "Your has been sent a request reset password.");
-        return response()->json(["message" => "We have e-mailed your password reset link!"]);
+
+        $payload = ["message" => "We have e-mailed your password reset link!", "token"=> $token];
+
+        return response()->json($payload);
     }
 
     public function reset($token, Request $request)

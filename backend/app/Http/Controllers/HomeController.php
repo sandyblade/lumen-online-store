@@ -78,4 +78,16 @@ class HomeController extends AppController
         return response()->json($payload);
     }
 
+    public function stream($param)
+    {
+        $file_path = storage_path('files') . '/' . $param;
+        if (file_exists($file_path)) {
+            $file = file_get_contents($file_path);
+            return response($file, 200)->header('Content-Type', 'image/jpeg');
+        }
+        $res['success'] = false;
+        $res['message'] = "File not found";
+        return $res;
+    }
+
 }

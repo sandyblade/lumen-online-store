@@ -17,8 +17,12 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+# Get File Upload
+$router->get('stream/{param}', 'HomeController@stream');
+
 $router->group(['prefix' => 'api'], function () use ($router) {
 
+    # Check Connection
     $router->get('/ping', function () use ($router) {
         return response()->json(['status' => true, 'message' => 'Connected Established !!']);
     });

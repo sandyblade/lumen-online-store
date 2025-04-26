@@ -1,11 +1,52 @@
 <script setup>
 
-    import { ref } from 'vue'
+    import {  ref } from 'vue'
+    import { Form, Field } from 'vee-validate'
+    import * as yup from 'yup'
+    import service from '../services'
 
     const nowYear = new Date().getFullYear()
     const showOldPassword = ref(false)
     const showPassword = ref(false)
     const showPasswordConfirm = ref(false)
+    const loading = ref(false)
+    const errorResponse = ref('')
+    const successResponse = ref('')
+
+    const schema = yup.object().shape({
+        current_password: yup.string().required('Current password is a required').min(6, "Current password must be at least 6 characters"),
+        password: yup.string().required().min(6),
+        password_confirmation: yup.string().required('Password confirm is a required').oneOf([yup.ref('password'), null], 'Passwords must match'),
+    })
+
+    const form = ref(null)
+    
+    const formData = ref({
+        current_password: '',
+        password: '',
+        password_confirmation: ''
+    })
+
+    const submit = (values) => { 
+
+        loading.value = true
+        errorResponse.value = ''
+        successResponse.value = ''
+
+        setTimeout(() => { 
+            service.profile.changePassword(values).then((result) => { 
+                loading.value = false
+                errorResponse.value = ''
+                successResponse.value = result.data.message
+                form.value.resetForm()
+            })
+            .catch((error) => {
+                loading.value = false
+                errorResponse.value = error.status === 401 ? service.expiredMessage : (error.response.data?.message || error.message)
+            });
+        }, 1500)
+
+    }
 
     function setShowOldPassword() {
         showOldPassword.value = !showOldPassword.value    
@@ -51,44 +92,71 @@
                                        <small>Enter a new password to reset the password on your account.</small>
                                   </p>
                             </div>
-                            <form>
+                            <div v-if="errorResponse" class="alert alert-danger">
+                                <span>{{ errorResponse }}</span>
+                            </div>
+                            <div v-if="successResponse" class="alert alert-success">
+                                <span>{{ successResponse }}</span>
+                            </div>
+                            <Form ref="form" :validation-schema="schema" @submit="submit" :initial-values="formData">
                                 <div class="mb-3 mt-2">
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text">
-                                            <i class="bi-lock"></i>
-                                        </span>
-                                        <input :type="showOldPassword ? 'text' : 'password'"  name="password_old" class="form-control" placeholder="Current Password" required />
-                                        <span class="input-group-text input-group-password"  @click="setShowOldPassword()">
-                                            <i :class="showOldPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="mb-3 mt-2">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">
-                                            <i class="bi-lock"></i>
-                                        </span>
-                                        <input :type="showPassword ? 'text' : 'password'"  name="password" class="form-control" placeholder="New Password Password" required />
-                                        <span class="input-group-text input-group-password"  @click="setShowPassword()">
-                                            <i :class="showPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
-                                        </span>
+                                       <Field  name="current_password" v-model="formData.current_password"  v-slot="{ field, errors }">
+                                            <span class="input-group-text">
+                                                <i class="bi-lock"></i>
+                                            </span>
+                                            <input v-bind="field" :type="showOldPassword ? 'text' : 'password'" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loading" placeholder="Current Password">
+                                            <span class="input-group-text input-group-password"  @click="setShowOldPassword()">
+                                                <i :class="showOldPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                            </span>
+                                            <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                                <span class="d-block" v-for="item in errors">
+                                                    {{ item }}
+                                                </span>
+                                            </div>
+                                        </Field>
                                     </div>
                                 </div>
                                  <div class="mb-3 mt-2">
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text">
-                                            <i class="bi-lock"></i>
-                                        </span>
-                                        <input :type="showPasswordConfirm ? 'text' : 'password'"  name="password" class="form-control" placeholder="Confirm New Password" required />
-                                        <span class="input-group-text input-group-password"  @click="setShowPasswordConfirm()">
-                                            <i :class="showPasswordConfirm ? 'bi-eye' : 'bi-eye-slash'"></i>
-                                        </span>
+                                       <Field  name="password" v-model="formData.password"  v-slot="{ field, errors }">
+                                            <span class="input-group-text">
+                                                <i class="bi-lock"></i>
+                                            </span>
+                                            <input v-bind="field" :type="showPassword ? 'text' : 'password'" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loading" placeholder="Account Password">
+                                            <span class="input-group-text input-group-password"  @click="setShowPassword()">
+                                                <i :class="showPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                            </span>
+                                            <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                                <span class="d-block" v-for="item in errors">
+                                                    {{ item }}
+                                                </span>
+                                            </div>
+                                        </Field>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary border w-100 mt-2" title="Click here to sign in">
-                                    <i class="bi-box-arrow-right me-2"></i>Change My Password
+                                <div class="mb-3 mt-2">
+                                    <div class="input-group mb-3">
+                                        <Field  name="password_confirmation" v-model="formData.password_confirmation"  v-slot="{ field, errors }">
+                                            <span class="input-group-text">
+                                                <i class="bi-lock"></i>
+                                            </span>
+                                            <input v-bind="field" :type="showPasswordConfirm ? 'text' : 'password'" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loading" placeholder="Confirm New Account Password">
+                                            <span class="input-group-text input-group-password"  @click="setShowPasswordConfirm()">
+                                                <i :class="showPasswordConfirm ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                            </span>
+                                            <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                                <span class="d-block" v-for="item in errors">
+                                                    {{ item }}
+                                                </span>
+                                            </div>
+                                        </Field>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary border w-100 mt-2" :class="loading ? 'disabled': ''" title="Click here to reset password">
+                                    <i class="me-2" :class="loading ? 'fas fa-circle-notch fa-spin' : 'bi-box-arrow-right'"></i>Change Account Password
                                 </button>
-                            </form>
+                            </Form>
                         </div>
                         <div class="card-footer p-3 text-center bg-primary">
                             <span class="text-white">

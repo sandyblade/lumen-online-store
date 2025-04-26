@@ -12,16 +12,28 @@
     const fliterSelected = ref(0)
     const filters = ["All Categories", "Laptop", "Accessories", "Camera", "Earphone"]
     const auth_logged = localStorage.getItem('auth_token') !== null
-    const auth_user = localStorage.getItem('auth_user')
-
+    const auth_user = ref({})
     let modalWishlist = ref(null)
     let modalCart = ref(null)
     let objWishlist = null
     let objCart = null
 
     onMounted(() => {
+
         objWishlist = new Modal(modalWishlist.value)
         objCart = new Modal(modalCart.value)
+
+        if (localStorage.getItem('auth_user')) {
+            let _auth_user = JSON.parse(localStorage.getItem('auth_user'))
+            auth_user.value = {
+                phone: _auth_user.phone ? _auth_user.phone : "Your Phone",
+                first_name: _auth_user.first_name,
+                last_name: _auth_user.last_name,
+                city: _auth_user.city ? _auth_user.city : "Your City",
+                country: _auth_user.country ? _auth_user.country : "Your Country",
+            }
+        }
+
     })
 
     function handleFilter(index){
@@ -42,7 +54,22 @@
         objCart.hide();
         setTimeout(() => { router.push(url) })
     }
-    
+
+    function logout(e) {
+        
+        e.preventDefault();
+        e.stopImmediatePropagation()
+
+        if (localStorage.getItem('auth_token')) {
+            localStorage.removeItem('auth_token')
+        }
+
+        if (localStorage.getItem('auth_user')) {
+            localStorage.removeItem('auth_user')
+        }
+        
+        setTimeout(() => { location.reload() })
+    }
 
 </script>
 
@@ -52,13 +79,17 @@
             <div class="container py-2">
                 <div class='clearfix'>
                     <ul class="header-links float-start p-0">
-                        <li><a href="https://wa.me/628989218470"><i class="bi bi-telephone-outbound me-1 mb-1 text-primary"></i>+628989218470</a></li>
-                        <li v-if="auth_logged"><a href="#"><i class="bi bi-envelope me-1 mb-1 text-primary"></i> {{ auth_user.first_name }} {{ auth_user.last_name }}</a></li>
-                        <li v-if="auth_logged"><a href="#"><i class="bi bi-pin-map me-1 mb-1 text-primary"></i> {{ auth_user.city }}, {{ auth_user.country }}</a></li>
+                        <li v-if="auth_logged && auth_user !== null"><a href="https://wa.me/628989218470"><i class="bi bi-telephone-outbound me-1 mb-1 text-primary"></i>{{ auth_user.phone }}</a></li>
+                        <li v-if="auth_logged && auth_user !== null"><a href="#"><i class="bi bi-envelope me-1 mb-1 text-primary"></i> {{ auth_user.first_name }} {{ auth_user.last_name }}</a></li>
+                        <li v-if="auth_logged && auth_user !== null"><a href="#"><i class="bi bi-pin-map me-1 mb-1 text-primary"></i> {{ auth_user.city }}, {{ auth_user.country }}</a></li>
                     </ul>
                     <ul class="header-links float-end p-0 header-account">
                         <li><a href="#"><i class="bi bi-currency-dollar me-1 mb-1 text-primary"></i> USD</a></li>
                         <li v-if="auth_logged"><router-link to="/account/profile" ><i class="bi bi-person-plus me-1 mb-1 text-primary"></i> My Account</router-link></li>
+                        <li v-if="auth_logged"><router-link to="/account/password" ><i class="bi bi-lock me-1 mb-1 text-primary"></i> Change Password</router-link></li>
+                        <li v-if="auth_logged">
+                            <a href="#" @click="(event) => logout(event)"><i class="fas fa-sign-out me-1 mb-1 text-primary"></i> Sign Out </a>
+                        </li>
                         <li v-if="!auth_logged"><router-link to="/auth/login"><i class="bi bi-person-circle me-1 mb-1 text-primary"></i> Login</router-link></li>
                         <li v-if="!auth_logged"><router-link to="/auth/register"><i class="bi bi-person-fill-add me-1 mb-1 text-primary"></i> Register</router-link></li>
                     </ul>

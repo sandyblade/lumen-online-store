@@ -13,6 +13,7 @@ import RegisterPage from "./pages/RegisterPage.vue"
 import ResetPasswordPage from "./pages/ResetPasswordPage.vue"
 import StorePage from "./pages/StorePage.vue"
 
+
 const routes = [
     {
         path: "/",
@@ -95,4 +96,16 @@ const routes = [
 ]
 
 const router = createRouter({ history: createWebHistory(), routes });
+
+router.beforeEach(async (to, from) => {
+    let authRoutes = ["Confirm", "ForgotPassword", "Login", "ResetPassword", "Register"]
+    let routeName = to.name
+    if (authRoutes.includes(routeName)) {
+        if (localStorage.getItem('auth_token')) {
+            router.push('/')
+            setTimeout(() => { location.reload() })
+        }
+    }
+})
+
 export default router;

@@ -4,14 +4,24 @@
     import { Vue3Lottie } from 'vue3-lottie'
     import CheckingJSON from '../animations/checking.json'
     import ConfirmedJSON from '../animations/confirmed.json'
+    import service from '../services'
+    import { useRoute, useRouter  } from 'vue-router'
 
     const loading = ref(true)
     const nowYear = new Date().getFullYear()
+    const route = useRoute()
+    const errorResponse = ref('')
 
     onMounted(() => {
-        setTimeout(() => {
+        let token = route.params.token
+        service.auth.confirm(token)
+        .then(() => {
             loading.value = false
-        }, 3000)
+        })
+        .catch((error) => {
+            loading.value = false
+            errorResponse.value = error.response.data?.message
+        });
     })
     
 </script>
@@ -43,13 +53,21 @@
                             <Vue3Lottie :animationData="CheckingJSON"  />
                         </div>
                         <div class="card-body mb-2 p-4 text-center" v-else>
-                            <Vue3Lottie :animationData="ConfirmedJSON"  />
-                            <div class="alert alert-success">
-                                <small>Your registration is complete. Now you can login</small>
-                            </div>
-                            <router-link to="/auth/login" class="btn btn-primary mt-3 w-100">
-                                <i class="bi-box-arrow-right me-2"></i>Please login here.
-                            </router-link>
+                           <div v-if="errorResponse">
+                                <Vue3Lottie :animationData="CheckingJSON"  />
+                                <div class="alert alert-danger">
+                                    <span>{{ errorResponse }}</span>
+                                </div>
+                           </div>
+                           <div v-else>
+                                <Vue3Lottie :animationData="ConfirmedJSON"  />
+                                <div class="alert alert-success">
+                                    <small>Your registration is complete. Now you can login</small>
+                                </div>
+                                <router-link to="/auth/login" class="btn btn-primary mt-3 w-100">
+                                    <i class="bi-box-arrow-right me-2"></i>Please login here.
+                                </router-link>
+                           </div>
                         </div>
                         <div class="card-footer p-3 text-center bg-primary">
                             <span class="text-white">

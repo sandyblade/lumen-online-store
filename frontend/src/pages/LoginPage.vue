@@ -1,26 +1,63 @@
 <script setup>
 
-    import { ref } from 'vue'
-    import { Form, ErrorMessage  } from 'vee-validate'
+    import {  ref } from 'vue'
+    import { Form, Field } from 'vee-validate'
     import * as yup from 'yup'
+    import service from '../services'
 
     const nowYear = new Date().getFullYear()
     const showPassword = ref(false)
-    
+    const loading = ref(false)
+    const errorResponse = ref('')
        
     const schema = yup.object().shape({
         email: yup.string().email().required(),
-        password: yup.string().required().min(6),
+        password: yup.string().required().min(6)
     })
 
     const formData = ref({
         email: '',
-        password: ''
+        password: '',
+        remember: false
     })
 
+    const form = ref(null)
+
     const submit = (values) => {
-        // implement your logic here
-        console.log(values)
+        values = {
+            ...values,
+            remember: formData.value.remember
+        }
+        loading.value = true
+        errorResponse.value = ''
+        setTimeout(() => { 
+            service.auth.login(values).then(async (result) => { 
+
+                loading.value = false
+                errorResponse.value = ''
+                form.value.resetForm()
+
+                let token = result.data.token
+                
+                if (!localStorage.getItem('auth_token')) {
+                    localStorage.setItem('auth_token', token)
+                }
+
+                let profile = await service.profile.detail()
+                if (!localStorage.getItem('auth_user')) {
+                    localStorage.setItem('auth_user', JSON.stringify(profile.data))
+                }
+
+                setTimeout(() => { 
+                    location.reload()
+                }, 1500)
+                
+            })
+            .catch((error) => {
+                loading.value = false
+                errorResponse.value = error.response.data?.message
+            });
+        }, 1500)
     }
    
     function setShowPassword() {
@@ -59,40 +96,47 @@
                                       <small>Please sign in with your e-mail address and correct password.</small>
                                   </p>
                             </div>
+                            <div v-if="errorResponse" class="alert alert-danger">
+                                <span>{{ errorResponse }}</span>
+                            </div>
                             <Form ref="form" :validation-schema="schema" @submit="submit" :initial-values="formData">
                                 <div class="mb-3 mt-2">
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text">
-                                            <i class="bi-envelope"></i>
-                                        </span>
-                                        <input type="email" v-model="formData.email" class="form-control" placeholder="Email Address" required />
-                                        <ErrorMessage name="email" v-slot="{ message }">
-                                            <div class="invalid-feedback">
-                                                {{ message }}
+                                        <Field type="email" name="email" v-model="formData.email"  v-slot="{ field, errors }">
+                                            <span class="input-group-text">
+                                                <i class="bi-envelope"></i>
+                                            </span>
+                                            <input v-bind="field" class="form-control" :class="errors.length > 0 ? 'is-invalid' : '' " :disabled="loading"   placeholder="Email Address">
+                                            <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                                <span class="d-block" v-for="item in errors">
+                                                    {{ item }}
+                                                </span>
                                             </div>
-                                        </ErrorMessage>
+                                        </Field>
                                     </div>
                                 </div>
                                 <div class="mb-3 mt-2">
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text">
-                                            <i class="bi-lock"></i>
-                                        </span>
-                                        <input :type="showPassword ? 'text' : 'password'"  name="password" class="form-control" placeholder="Credential Password" required />
-                                        <span class="input-group-text input-group-password"  @click="setShowPassword()">
-                                            <i :class="showPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
-                                        </span>
-                                        <ErrorMessage name="password" v-slot="{ message }">
-                                            <div class="invalid-feedback">
-                                                {{ message }}
+                                         <Field  name="password" v-model="formData.password"  v-slot="{ field, errors }">
+                                            <span class="input-group-text">
+                                                <i class="bi-lock"></i>
+                                            </span>
+                                            <input v-bind="field" :type="showPassword ? 'text' : 'password'" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loading" placeholder="Credential Password">
+                                            <span class="input-group-text input-group-password"  @click="setShowPassword()">
+                                                <i :class="showPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                            </span>
+                                            <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                                <span class="d-block" v-for="item in errors">
+                                                    {{ item }}
+                                                </span>
                                             </div>
-                                        </ErrorMessage>
+                                        </Field>
                                     </div>
                                 </div>
                                 <div class="clearfix mb-3">
                                     <div class="form-check float-start">
                                         <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" name="remember" /> Remember Me
+                                            <input class="form-check-input" type="checkbox" name="remember" v-model="formData.remember"  :disabled="loading" /> Remember Me 
                                         </label>
                                     </div>
                                     <div class="float-end">
@@ -101,8 +145,8 @@
                                         </router-link>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary border w-100 mt-2" title="Click here to sign in">
-                                    <i class="bi-box-arrow-right me-2"></i>Sign In Now
+                                <button type="submit" class="btn btn-primary border w-100 mt-2" :class="loading ? 'disabled': ''" title="Click here to sign in">
+                                    <i class="me-2" :class="loading ? 'fas fa-circle-notch fa-spin' : 'bi-box-arrow-right'"></i>Sign In Now
                                 </button>
                             </Form>
                             <div class="text-center mt-3">

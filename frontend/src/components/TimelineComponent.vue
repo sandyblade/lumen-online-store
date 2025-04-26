@@ -1,62 +1,58 @@
+<script setup>
+
+   import Shimmer from "vue3-loading-shimmer"
+   import { ref, onMounted } from 'vue'
+   import moment from 'moment'
+   import service from '../services'
+
+   const loading = ref(true)
+   const activities = ref([])
+
+   const loadContent = async () => {
+      loading.value = true
+      await service.profile.activity().then((reponse) => { 
+        activities.value = reponse.data
+        setTimeout(() => { 
+            loading.value = false
+        }, 1500)
+      })
+      .catch((error) => {
+          console.log(error)
+      });
+   }
+
+   onMounted( () => {
+      loadContent()   
+   })
+
+   defineExpose({
+      loadContent
+   });
+
+</script>
 <template>
-    <!-- Timeline 1 - Bootstrap Brain Component -->
     <section class="bsb-timeline-1 py-5 py-xl-8">
        <div class="container">
-          <div class="row justify-content-center">
+         <div class="row justify-content-center" v-if="loading">
+             <Shimmer style="height: 1rem; border-radius: 10px;" class="mb-2" />
+             <Shimmer style="height: 1rem; border-radius: 10px;" class="mb-2" />
+             <Shimmer style="height: 1rem; border-radius: 10px;" class="mb-2" />
+         </div>
+         <div class="row justify-content-center" v-else>
              <div class="col-10 col-md-8 col-xl-6">
                 <ul class="timeline">
-                   <li class="timeline-item">
-                      <div class="timeline-body">
-                         <div class="timeline-content">
-                            <div class="card border-0">
-                               <div class="card-body p-0">
-                                  <h5 class="card-subtitle text-secondary mb-1">2023</h5>
-                                  <h2 class="card-title mb-3">Bootstrap 5</h2>
-                                  <p class="card-text m-0">Powerful, extensible, and feature-packed frontend toolkit. Build and customize with Sass, utilize prebuilt grid system and components, and bring projects to life with powerful JavaScript plugins.</p>
-                               </div>
-                            </div>
-                         </div>
-                      </div>
-                   </li>
-                   <li class="timeline-item">
-                      <div class="timeline-body">
-                         <div class="timeline-content">
-                            <div class="card border-0">
-                               <div class="card-body p-0">
-                                  <h5 class="card-subtitle text-secondary mb-1">2022</h5>
-                                  <h2 class="card-title mb-3">Bootstrap 4</h2>
-                                  <p class="card-text m-0">Get started with Bootstrap, the world’s most popular framework for building responsive, mobile-first sites, with jsDelivr and a template starter page. Bootstrap 4 has no active support.</p>
-                               </div>
-                            </div>
-                         </div>
-                      </div>
-                   </li>
-                   <li class="timeline-item">
-                      <div class="timeline-body">
-                         <div class="timeline-content">
-                            <div class="card border-0">
-                               <div class="card-body p-0">
-                                  <h5 class="card-subtitle text-secondary mb-1">2019</h5>
-                                  <h2 class="card-title mb-3">Bootstrap 3</h2>
-                                  <p class="card-text m-0">Bootstrap is the most popular HTML, CSS, and JS framework for developing responsive, mobile first projects on the web. Bootstrap 3 has no active support.</p>
-                               </div>
-                            </div>
-                         </div>
-                      </div>
-                   </li>
-                   <li class="timeline-item">
-                      <div class="timeline-body">
-                         <div class="timeline-content">
-                            <div class="card border-0">
-                               <div class="card-body p-0">
-                                  <h5 class="card-subtitle text-secondary mb-1">2013</h5>
-                                  <h2 class="card-title mb-3">Bootstrap 2</h2>
-                                  <p class="card-text m-0">Sleek, intuitive, and powerful front-end framework for faster and easier web development. Bootstrap 2 is no longer officially supported.</p>
-                               </div>
-                            </div>
-                         </div>
-                      </div>
-                   </li>
+                  <li class="timeline-item" v-for="item in activities">
+                     <div class="timeline-body">
+                        <div class="timeline-content">
+                           <div class="card border-0 bg-primary text-white">
+                              <div class="card-body">
+                                 <small class="card-subtitle text-secondary mb-1 d-block text-white">{{ moment(item.created_at).format("DD-MM-YYYY HH:mm:ss") }}</small>
+                                 <p class="card-text m-0"><small>{{ item.event }} - {{ item.description }}</small></p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </li>
                 </ul>
              </div>
           </div>

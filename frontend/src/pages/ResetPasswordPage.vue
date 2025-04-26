@@ -1,10 +1,58 @@
 <script setup>
 
-    import { ref } from 'vue'
+    import {  ref } from 'vue'
+    import { Form, Field } from 'vee-validate'
+    import * as yup from 'yup'
+    import { useRoute, useRouter  } from 'vue-router'
+    import service from '../services'
 
+    const router = useRouter()
     const nowYear = new Date().getFullYear()
     const showPassword = ref(false)
     const showPasswordConfirm = ref(false)
+    const loading = ref(false)
+    const route = useRoute()
+    const errorResponse = ref('')
+    const successResponse = ref('')
+
+    const schema = yup.object().shape({
+        email: yup.string().email().required(),
+        password: yup.string().required().min(6),
+        password_confirmation: yup.string().required('Password confirm is a required').oneOf([yup.ref('password'), null], 'Passwords must match'),
+    })
+
+    const form = ref(null)
+    
+    const formData = ref({
+        email: '',
+        password: '',
+        password_confirmation: ''
+    })
+
+    const submit = (values) => { 
+
+        let token = route.params.token
+        loading.value = true
+        errorResponse.value = ''
+        successResponse.value = ''
+
+        setTimeout(() => { 
+            service.auth.reset(token, values).then((result) => { 
+                loading.value = false
+                errorResponse.value = ''
+                successResponse.value = result.data.message
+                form.value.resetForm()
+                setTimeout(() => { 
+                    router.push(`/auth/login`)
+                }, 2000)
+            })
+            .catch((error) => {
+                loading.value = false
+                errorResponse.value = error.response.data?.message
+            });
+        }, 1500)
+
+    }
 
     function setShowPassword() {
         showPassword.value = !showPassword.value    
@@ -46,41 +94,68 @@
                                        <small>Enter a new password to reset the password on your account. We'll ask for this password whenever you log in.</small>
                                   </p>
                             </div>
-                            <form>
+                            <div v-if="errorResponse" class="alert alert-danger">
+                                <span>{{ errorResponse }}</span>
+                            </div>
+                            <div v-if="successResponse" class="alert alert-success">
+                                <span>{{ successResponse }}</span>
+                            </div>
+                            <Form ref="form" :validation-schema="schema" @submit="submit" :initial-values="formData">
                                 <div class="mb-3 mt-2">
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text">
-                                            <i class="bi-envelope"></i>
-                                        </span>
-                                        <input type="email" name="email" class="form-control" placeholder="Email Address" required />
+                                        <Field type="email" name="email" v-model="formData.email"  v-slot="{ field, errors }">
+                                            <span class="input-group-text">
+                                                <i class="bi-envelope"></i>
+                                            </span>
+                                            <input v-bind="field" class="form-control" :class="errors.length > 0 ? 'is-invalid' : '' " :disabled="loading"   placeholder="Email Address">
+                                            <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                                <span class="d-block" v-for="item in errors">
+                                                    {{ item }}
+                                                </span>
+                                            </div>
+                                        </Field>
                                     </div>
                                 </div>
                                 <div class="mb-3 mt-2">
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text">
-                                            <i class="bi-lock"></i>
-                                        </span>
-                                        <input :type="showPassword ? 'text' : 'password'"  name="password" class="form-control" placeholder="Account Password" required />
-                                        <span class="input-group-text input-group-password"  @click="setShowPassword()">
-                                            <i :class="showPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
-                                        </span>
+                                       <Field  name="password" v-model="formData.password"  v-slot="{ field, errors }">
+                                            <span class="input-group-text">
+                                                <i class="bi-lock"></i>
+                                            </span>
+                                            <input v-bind="field" :type="showPassword ? 'text' : 'password'" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loading" placeholder="Account Password">
+                                            <span class="input-group-text input-group-password"  @click="setShowPassword()">
+                                                <i :class="showPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                            </span>
+                                            <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                                <span class="d-block" v-for="item in errors">
+                                                    {{ item }}
+                                                </span>
+                                            </div>
+                                        </Field>
                                     </div>
                                 </div>
-                                 <div class="mb-3 mt-2">
+                                <div class="mb-3 mt-2">
                                     <div class="input-group mb-3">
-                                        <span class="input-group-text">
-                                            <i class="bi-lock"></i>
-                                        </span>
-                                        <input :type="showPasswordConfirm ? 'text' : 'password'"  name="password" class="form-control" placeholder="Confirm Account Password" required />
-                                        <span class="input-group-text input-group-password"  @click="setShowPasswordConfirm()">
-                                            <i :class="showPasswordConfirm ? 'bi-eye' : 'bi-eye-slash'"></i>
-                                        </span>
+                                        <Field  name="password_confirmation" v-model="formData.password_confirmation"  v-slot="{ field, errors }">
+                                            <span class="input-group-text">
+                                                <i class="bi-lock"></i>
+                                            </span>
+                                            <input v-bind="field" :type="showPasswordConfirm ? 'text' : 'password'" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loading" placeholder="Confirm Account Password">
+                                            <span class="input-group-text input-group-password"  @click="setShowPasswordConfirm()">
+                                                <i :class="showPasswordConfirm ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                            </span>
+                                            <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                                <span class="d-block" v-for="item in errors">
+                                                    {{ item }}
+                                                </span>
+                                            </div>
+                                        </Field>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary border w-100 mt-2" title="Click here to sign in">
-                                    <i class="bi-box-arrow-right me-2"></i>Reset Password
+                                <button type="submit" class="btn btn-primary border w-100 mt-2" :class="loading ? 'disabled': ''" title="Click here to reset password">
+                                    <i class="me-2" :class="loading ? 'fas fa-circle-notch fa-spin' : 'bi-box-arrow-right'"></i>Reset Password
                                 </button>
-                            </form>
+                            </Form>
                         </div>
                         <div class="card-footer p-3 text-center bg-primary">
                             <span class="text-white">

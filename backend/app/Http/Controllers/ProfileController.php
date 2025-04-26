@@ -51,11 +51,6 @@ class ProfileController extends AppController
             'email'     => 'required|email|max:180|unique:users,email,'.$user->id
         ];
 
-        if($request->input('phone'))
-        {
-            $rules["phone"] = 'numeric|digits_between:4,14|unique:users,phone,'.$user->id;
-        }
-
         $this->validate($request, $rules);
 
         $user->email = $request->input('email');

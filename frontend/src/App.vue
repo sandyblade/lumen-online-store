@@ -12,9 +12,22 @@
     
     onMounted(() => {
       service.ping().then(() => { 
-        setTimeout(() => { 
-          loading.value = false
-          connected.value = true
+        setTimeout(async () => { 
+          if (localStorage.getItem('auth_token')) {
+            await service.profile.detail().then(() => { 
+              loading.value = false
+              connected.value = true       
+            })
+            .catch(() => {
+              localStorage.removeItem('auth_token')
+              localStorage.removeItem('auth_user')
+              loading.value = false
+              connected.value = true  
+            })
+          } else {
+            loading.value = false
+            connected.value = true            
+          }
         }, 3000)
       })
       .catch((error) => {

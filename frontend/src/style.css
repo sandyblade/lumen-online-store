@@ -497,7 +497,7 @@ ol.breadcrumb {
   right: 45px;
   bottom: 45px;
   z-index: 99;
- 
+
 }
 
 .btn-lg-square {
@@ -513,4 +513,8 @@ ol.breadcrumb {
   align-items: center;
   justify-content: center;
   font-weight: normal;
+}
+
+.invalid-feedback span::first-letter {
+  text-transform: capitalize;
 }
