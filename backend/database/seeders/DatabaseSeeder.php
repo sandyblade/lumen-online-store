@@ -1,15 +1,15 @@
 <?php
 
 /**
-* This file is part of the Sandy Andryanto Online Store Website.
-*
-* @author     Sandy Andryanto <sandy.andryanto.blade@gmail.com>
-* @copyright  2025
-*
-* For the full copyright and license information,
-* please view the LICENSE.md file that was distributed
-* with this source code.
-*/
+ * This file is part of the Sandy Andryanto Online Store Website.
+ *
+ * @author     Sandy Andryanto <sandy.andryanto.blade@gmail.com>
+ * @copyright  2025
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE.md file that was distributed
+ * with this source code.
+ */
 
 namespace Database\Seeders;
 
@@ -28,8 +28,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $total = Models\User::Count();
-        if($total == 0)
-        {
+        if ($total == 0) {
             $this->CreateUser();
             $this->CreateSetting();
             $this->CreateCategories();
@@ -43,12 +42,15 @@ class DatabaseSeeder extends Seeder
 
     private function CreateUser()
     {
-        for($i = 1; $i <=10; $i++)
-        {
+        for ($i = 1; $i <= 10; $i++) {
+
+            $gender = rand(1, 2);
+            $gender_name = $gender == 1 ? 'male' : 'female';
             $faker = Faker::create();
             $user =  new Models\User();
-            $user->first_name = $faker->firstName;
+            $user->first_name = $faker->firstName($gender_name);
             $user->last_name = $faker->lastName;
+            $user->gender = $gender == 1 ? 'M' : 'F';
             $user->email = $faker->safeEmail;
             $user->password = Hash::make("Qwerty123!");
             $user->phone = $faker->phoneNumber;
@@ -68,7 +70,6 @@ class DatabaseSeeder extends Seeder
             $auth->expired_at = date("Y-m-d H:i:s");
             $auth->status = 1;
             $auth->save();
-
         }
     }
 
@@ -89,16 +90,15 @@ class DatabaseSeeder extends Seeder
             Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         ";
 
-        for($i = 1; $i <=9; $i++)
-        {
+        for ($i = 1; $i <= 9; $i++) {
 
             $thumbnail = $this->ProductImages()[rand(0, 8)];
             $brand = Models\Brand::inRandomOrder()->first();
             $product = new Models\Product();
             $product->image = $thumbnail;
             $product->brand_id = $brand->id;
-            $product->sku = "P00".$i;
-            $product->name = "Product ".$i;
+            $product->sku = "P00" . $i;
+            $product->name = "Product " . $i;
             $product->total_order = rand(100, 1000);
             $product->total_rating = rand(100, 1000);
             $product->price = rand(100, 999);
@@ -112,25 +112,23 @@ class DatabaseSeeder extends Seeder
             $product->Categories()->sync($categories);
             $reviewers = Models\User::inRandomOrder()->limit(5)->get();
 
-            foreach($reviewers as $reviewer)
-            {
+            foreach ($reviewers as $reviewer) {
                 $pr = new Models\ProductReview();
                 $pr->product_id = $product->id;
                 $pr->user_id = $reviewer->id;
-                $pr->rating = rand(0,100);
+                $pr->rating = rand(0, 100);
                 $pr->review = $description;
                 $pr->status = 1;
                 $pr->save();
             }
 
-            for($in = 0; $in < 3; $in++)
-            {
+            for ($in = 0; $in < 3; $in++) {
                 $image = rand(0, 8);
                 $path = $this->ProductImages()[$image];
                 $pi = new Models\ProductImage();
                 $pi->product_id = $product->id;
                 $pi->path = $path;
-                $pi->sort = ($in+1);
+                $pi->sort = ($in + 1);
                 $pi->status = 1;
                 $pi->save();
             }
@@ -138,10 +136,8 @@ class DatabaseSeeder extends Seeder
             $sizes = Models\Size::All();
             $colours = Models\Colour::All();
 
-            foreach($sizes as $size)
-            {
-                foreach($colours as $colur)
-                {
+            foreach ($sizes as $size) {
+                foreach ($colours as $colur) {
                     $inv = new Models\ProductInventory();
                     $inv->product_id = $product->id;
                     $inv->size_id = $size->id;
@@ -151,8 +147,6 @@ class DatabaseSeeder extends Seeder
                     $inv->save();
                 }
             }
-
-
         }
     }
 
@@ -167,26 +161,23 @@ class DatabaseSeeder extends Seeder
         ];
 
         $num = 1;
-        foreach($items as $image => $name)
-        {
+        foreach ($items as $image => $name) {
             Models\Category::create([
-                "name"=> $name,
-                "image"=> $image,
-                "status"=> 1,
-                "displayed"=> $num <= 3 ? 1: 0
+                "name" => $name,
+                "image" => $image,
+                "status" => 1,
+                "displayed" => $num <= 3 ? 1 : 0
             ]);
             $num++;
         }
-
     }
 
     private function CreateBrands()
     {
         $items = ["Samsung", "LG", "Sony", "Apple", "Microsoft"];
 
-        foreach($items as $item)
-        {
-            Models\Brand::create(["name"=> $item, "status"=> 1]);
+        foreach ($items as $item) {
+            Models\Brand::create(["name" => $item, "status" => 1]);
         }
     }
 
@@ -202,9 +193,8 @@ class DatabaseSeeder extends Seeder
             "#AAA"      => "Light Gray"
         ];
 
-        foreach($colors as $key => $value)
-        {
-            Models\Colour::create(["code"=> $key, "name"=> $value, "status"=> 1]);
+        foreach ($colors as $key => $value) {
+            Models\Colour::create(["code" => $key, "name" => $value, "status" => 1]);
         }
     }
 
@@ -213,9 +203,8 @@ class DatabaseSeeder extends Seeder
         $items = ["Direct Bank Transfer", "Cheque Payment", "Paypal System"];
         $description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua";
 
-        foreach($items as $item)
-        {
-            Models\Payment::create(["name"=> $item, "description"=> $description, "status"=> 1]);
+        foreach ($items as $item) {
+            Models\Payment::create(["name" => $item, "description" => $description, "status" => 1]);
         }
     }
 
@@ -223,9 +212,8 @@ class DatabaseSeeder extends Seeder
     {
         $items = ["11 to 12 Inches", "13 to 14 Inches", "15 to 16 Inches", "17 to 18 Inches"];
 
-        foreach($items as $item)
-        {
-            Models\Size::create(["name"=> $item, "status"=> 1]);
+        foreach ($items as $item) {
+            Models\Size::create(["name" => $item, "status" => 1]);
         }
     }
 
@@ -253,11 +241,9 @@ class DatabaseSeeder extends Seeder
             "taxes_value"           => 10
         ];
 
-        foreach($settings as $key => $value)
-        {
-            Models\Setting::create(["key_name"=> $key, "key_value"=> $value,]);
+        foreach ($settings as $key => $value) {
+            Models\Setting::create(["key_name" => $key, "key_value" => $value,]);
         }
-
     }
 
     private function ProductImages()
@@ -274,5 +260,4 @@ class DatabaseSeeder extends Seeder
             "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product09.png"
         ];
     }
-
 }

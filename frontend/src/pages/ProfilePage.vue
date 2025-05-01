@@ -21,6 +21,7 @@
         email: yup.string().email().required(),
         first_name: yup.string().required(),
         last_name: yup.string().required(),
+        gender: yup.string().required(),
         phone: yup.string().required(),
         city: yup.string().required(),
         country: yup.string().required(),
@@ -172,6 +173,26 @@
                                         </span>
                                     </div>
                                 </Field>
+                            </span>
+                        </div>
+                         <div class="mb-3">
+                            <label class="form-label">Gender <span class="text-danger">*</span></label>
+                            <span v-if="loadingContent">
+                               <Shimmer style="height: 1rem; border-radius: 10px;" />
+                            </span>
+                            <span v-else>
+                                 <Field  name="gender" v-model="formData.gender"  v-slot="{ field, errors }">
+                                    <select v-bind="field" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loadingSubmit" placeholder="Select Gender">
+                                        <option disabled>Select Gender</option>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                    </select>
+                                    <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                        <span class="d-block" v-for="item in errors">
+                                            {{ item }}
+                                        </span>
+                                    </div>
+                                 </Field>
                             </span>
                         </div>
                         <div class="mb-3">

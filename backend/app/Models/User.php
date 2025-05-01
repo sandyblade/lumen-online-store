@@ -1,15 +1,15 @@
 <?php
 
 /**
-* This file is part of the Sandy Andryanto Online Store Website.
-*
-* @author     Sandy Andryanto <sandy.andryanto.blade@gmail.com>
-* @copyright  2025
-*
-* For the full copyright and license information,
-* please view the LICENSE.md file that was distributed
-* with this source code.
-*/
+ * This file is part of the Sandy Andryanto Online Store Website.
+ *
+ * @author     Sandy Andryanto <sandy.andryanto.blade@gmail.com>
+ * @copyright  2025
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE.md file that was distributed
+ * with this source code.
+ */
 
 namespace App\Models;
 
@@ -36,6 +36,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'image',
         'first_name',
         'last_name',
+        'gender',
         'email',
         'phone',
         'password',
@@ -57,32 +58,38 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'remember_token'
     ];
 
-    public function Authentication() {
+    public function Authentication()
+    {
         return $this->hasMany(Authentication::class);
     }
 
-    public function Activity() {
+    public function Activity()
+    {
         return $this->hasMany(Activity::class);
     }
 
-    public function Order() {
+    public function Order()
+    {
         return $this->hasMany(Order::class);
     }
 
-    public function ProductReview() {
+    public function ProductReview()
+    {
         return $this->hasMany(ProductReview::class);
     }
 
-    public function Wishlists() {
+    public function Wishlists()
+    {
         return $this->belongsToMany(Product::class, "products_wishlists");
     }
 
-    public function getJWTIdentifier(){
+    public function getJWTIdentifier()
+    {
         return $this->getKey();
     }
 
-    public function getJWTCustomClaims(){
+    public function getJWTCustomClaims()
+    {
         return [];
     }
-
 }

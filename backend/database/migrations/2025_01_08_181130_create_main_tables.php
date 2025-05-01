@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('image', 255)->nullable()->index();
             $table->string('first_name', 180)->nullable()->index();
             $table->string('last_name', 180)->nullable()->index();
+            $table->string('gender', 180)->nullable()->index();
             $table->string('email', 180)->index();
             $table->string('phone', 20)->nullable()->index();
             $table->string('password', 255)->index();
