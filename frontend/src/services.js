@@ -80,10 +80,20 @@ const profile = {
     },
 }
 
+const home = {
+    component: async () => {
+        return await http().get("/api/home/component")
+    },
+    newsletter: async (data) => {
+        return await http().post("/api/newsletter/send", data)
+    },
+}
+
 export default {
     ping,
     getFile,
     expiredMessage,
     auth,
-    profile
+    profile,
+    home
 }

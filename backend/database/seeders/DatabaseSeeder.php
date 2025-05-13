@@ -161,7 +161,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         $num = 1;
-        foreach ($items as $image => $name) {
+        foreach ($items as $name => $image) {
             Models\Category::create([
                 "name" => $name,
                 "image" => $image,

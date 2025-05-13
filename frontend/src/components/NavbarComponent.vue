@@ -1,8 +1,9 @@
 <script setup>
 
 defineProps({
-    logged: Boolean,
+    logged: Boolean
 })
+
 
 </script>
 

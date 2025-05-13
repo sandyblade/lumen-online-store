@@ -1,6 +1,6 @@
 <script setup>
     import SliderComponent from '../components/SliderComponent.vue'
-    import BestSellerComponent from '../components/BestSellerComponent.vue'
+    import BestSellerComponent from '../components/BestSellerComponent.vue'     
 </script>
 <template>
    <main class="flex-shrink-0">
