@@ -6,13 +6,15 @@
 
     defineProps({
         logged: Boolean,
+        categories: Array
     })
 
     const router = useRouter()
-    const fliterSelected = ref(0)
-    const filters = ["All Categories", "Laptop", "Accessories", "Camera", "Earphone"]
+    const categorySelected = ref({})
     const auth_logged = localStorage.getItem('auth_token') !== null
     const auth_user = ref({})
+    const search = defineModel('search')
+    
     let modalWishlist = ref(null)
     let modalCart = ref(null)
     let objWishlist = null
@@ -36,8 +38,8 @@
 
     })
 
-    function handleFilter(index){
-        fliterSelected.value = index
+    function handleFilter(row){
+        categorySelected.value = row
     }
 
     function showModalWishlist(){
@@ -69,6 +71,18 @@
         }
         
         setTimeout(() => { location.reload() })
+    }
+
+    function handleSearch(e){
+        e.preventDefault();
+        e.stopImmediatePropagation()
+        if (search.value) {
+            const keySearch = search.value
+            const category = categorySelected.value
+            const category_id = category.id ? category.id : 0
+            const url = `store?category=${category_id}&search=${keySearch}`
+            setTimeout(() => { router.push(url) })
+        }
     }
 
 </script>
@@ -110,13 +124,14 @@
                         <div class="header-search mt-3">
                             <div class="input-group">
                                 <button class="btn bg-dark dropdown-toggle"type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="text-white"><i class="bi bi-cart me-1"></i>{{ filters[fliterSelected] }}</span>
+                                    <span class="text-white"><i class="bi bi-cart me-1"></i>{{ Object.keys(categorySelected).length > 0 ? categorySelected.name : 'All Categories' }}</span>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li v-for="(filter, index) in filters"><a class="dropdown-item" href="#" @click="handleFilter(index)" >{{ filter }}</a></li>
+                                    <li><a class="dropdown-item" href="#" @click="handleFilter({})" >All Categories</a></li>
+                                    <li v-for="category in categories"><a class="dropdown-item" href="#" @click="handleFilter(category)" >{{ category.name }}</a></li>
                                 </ul>
-                                <input type="text"  placeholder='Search here..' class="form-control" aria-label="Text input with dropdown button">
-                                <button class="btn bg-dark" type="button" >
+                                <input type="text"  placeholder='Search here..' v-model="search" class="form-control" aria-label="Text input with dropdown button">
+                                <button class="btn bg-dark" @click="(event) => handleSearch(event)"  type="button" >
                                     <span class="text-white"><i class="bi bi-search mb-1 me-1"></i>Search</span>
                                 </button>
                             </div>

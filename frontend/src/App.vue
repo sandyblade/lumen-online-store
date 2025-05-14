@@ -8,14 +8,11 @@
     
     const loading = ref(true)
     const connected = ref(false)
-    const component = ref({})
-    
+   
     
     onMounted(() => {
       service.ping().then(() => { 
         setTimeout(async () => { 
-          let componentData = await service.home.component()
-          component.value = componentData
           if (localStorage.getItem('auth_token')) {
             await service.profile.detail().then(() => { 
               loading.value = false
