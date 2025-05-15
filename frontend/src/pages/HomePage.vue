@@ -1,44 +1,66 @@
 <script setup>
+
+    import Shimmer from "vue3-loading-shimmer"
+    import { ref, onMounted } from 'vue'
     import SliderComponent from '../components/SliderComponent.vue'
-    import BestSellerComponent from '../components/BestSellerComponent.vue'     
+    import BestSellerComponent from '../components/BestSellerComponent.vue'  
+    import services from '../services';
+
+    const loading = ref(true)
+    const categories = ref([])
+    const products = ref([])
+    const topSellings = ref([])
+    const bestSellers = ref([])
+
+    async function loadData(){
+        loading.value = true
+        await services.home.page()
+            .then((response) => {
+                setTimeout(() => { 
+                    const data = response.data
+                    categories.value = data.categories
+                    products.value = data.products
+                    topSellings.value = data.topSellings
+                    bestSellers.value = data.bestSellers
+                    loading.value = false
+                }, 1500)
+            }).catch((error) => {
+            console.log(error)
+       })
+    }
+
+    onMounted(() => {
+       loadData()
+    })
+
+    
 </script>
 <template>
    <main class="flex-shrink-0">
       <div class="container">
-          <div class="row mt-5">
-              <div class="col-md-4">
+          <div v-if="loading" class="row mt-5">
+             <div class="col-md-4">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+             <div class="col-md-4">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+             <div class="col-md-4">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+          </div>
+          <div v-else class="row mt-5">
+              <div class="col-md-4" v-for="category in categories">
                   <div class="shop">
                       <div class="shop-img">
-                         <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop01.png" alt="" />
+                         <img :src="category.image" alt="" />
                       </div>
                       <div class="shop-body">
-                         <h3 class="d-block">Laptop</h3>
-                         <h3 class="d-block">Collection</h3>
-                         <a href="#" class="cta-btn"><i class="bi bi-arrow-right-circle me-1"></i>Shop now</a>
-                      </div>
-                  </div>
-              </div>
-              <div class="col-md-4">
-                  <div class="shop">
-                      <div class="shop-img">
-                         <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop03.png" alt="" />
-                      </div>
-                      <div class="shop-body">
-                         <h3 class="d-block">Accessories</h3>
-                         <h3 class="d-block">Collection</h3>
-                         <a href="#" class="cta-btn"><i class="bi bi-arrow-right-circle me-1"></i>Shop now</a>
-                      </div>
-                  </div>
-              </div>
-              <div class="col-md-4">
-                  <div class="shop">
-                      <div class="shop-img">
-                         <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop02.png" alt="" />
-                      </div>
-                      <div class="shop-body">
-                         <h3 class="d-block">Cameras</h3>
-                         <h3 class="d-block">Collection</h3>
-                         <a href="#" class="cta-btn"><i class="bi bi-arrow-right-circle me-1"></i>Shop now</a>
+                        <h3 class="d-block">{{ category.name }}</h3>
+                        <h3 class="d-block">Collection</h3>
+                        <router-link :to="`store?category=${category.id}`" class="cta-btn">
+                            <i class="bi bi-arrow-right-circle me-1"></i>Shop now
+                        </router-link>
                       </div>
                   </div>
               </div>
@@ -46,7 +68,23 @@
       </div>
    </main>
    <main class="flex-shrink-0" id="products">
-      <div class="container p-3">
+      <div class="container p-3" v-if="loading">
+         <div class="row">
+            <div class="col-md-3">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+             <div class="col-md-3">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+             <div class="col-md-3">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+             <div class="col-md-3">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+         </div>
+      </div>
+      <div class="container p-3"  v-else>
         <div class="row">
             <div class="col-md-12 mb-2">
                 <div class="section-title">
@@ -62,52 +100,79 @@
                 </div>
             </div>  
             <div class="col-md-12">
-                <SliderComponent />
+                <SliderComponent :products="products" />
             </div>
         </div>
       </div>    
    </main>
-   <main class="flex-shrink-0 border" id="hot-deal">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="hot-deal">
-                    <ul class="hot-deal-countdown">
-                        <li>
-                            <div>
-                                <h3>02</h3>
-                                <span>Days</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div>
-                                <h3>10</h3>
-                                <span>Hours</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div>
-                                <h3>34</h3>
-                                <span>Mins</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div>
-                                <h3>60</h3>
-                                <span>Secs</span>
-                            </div>
-                        </li>
-                    </ul>
-                    <h2 class="text-uppercase">hot deal this week</h2>
-                    <p>New Collection Up to 50% OFF</p>
-                    <a class="bg-primary btn w-25 mt-1 text-white" href="#"><i class="bi bi-cart 'mb-1 me-1"></i>Shop now</a>
+   <main class="flex-shrink-0" v-if="loading">
+        <div class="container p-3">
+            <div class="row">
+                <div class="col-md-12">
+                    <Shimmer style="height: 20rem; border-radius: 5px;" />
+                </div>
+            </div>
+      </div>
+   </main>
+   <main v-else class="flex-shrink-0 border" id="hot-deal">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="hot-deal">
+                        <ul class="hot-deal-countdown">
+                            <li>
+                                <div>
+                                    <h3>02</h3>
+                                    <span>Days</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <h3>10</h3>
+                                    <span>Hours</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <h3>34</h3>
+                                    <span>Mins</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <h3>60</h3>
+                                    <span>Secs</span>
+                                </div>
+                            </li>
+                        </ul>
+                        <h2 class="text-uppercase">hot deal this week</h2>
+                        <p>New Collection Up to 50% OFF</p>
+                         <router-link to="store" class="bg-primary btn w-25 mt-1 text-white">
+                            <i class="bi bi-cart 'mb-1 me-1"></i>Shop now
+                        </router-link>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
    </main>
    <main class="flex-shrink-0" id="top-selling">
-      <div class="container p-3">
+      <div class="container p-3" v-if="loading">
+          <div class="row">
+            <div class="col-md-3">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+             <div class="col-md-3">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+             <div class="col-md-3">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+             <div class="col-md-3">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+         </div>  
+      </div>
+      <div class="container p-3" v-else>
         <div class="row">
             <div class="col-md-12 mb-2">
                 <div class="section-title">
@@ -123,20 +188,31 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <SliderComponent />
+                <SliderComponent :products="topSellings" />
             </div>
         </div>
       </div>    
    </main>
    <main class="flex-shrink-0 mt-5" id="best-seller">
       <div class="container p-3">
-         <div class="row">
+         <div class="row mb-4" v-if="loading">
+            <div class="col-md-4">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+             <div class="col-md-4">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+             <div class="col-md-4">
+                 <Shimmer style="height: 20rem; border-radius: 5px;" />
+             </div>
+         </div>
+         <div class="row" v-else>
             <div class="col-md-4">
                 <div class="section-title text-center">
                     <h5 class="title">Best Seller</h5>
                 </div>
                 <div class="slider-container">
-                    <BestSellerComponent/>
+                    <BestSellerComponent :products="bestSellers" />
                 </div>
             </div>
             <div class="col-md-4">
@@ -144,7 +220,7 @@
                     <h5 class="title">Best Seller</h5>
                 </div>
                 <div class="slider-container">
-                    <BestSellerComponent/>
+                    <BestSellerComponent :products="bestSellers" />
                 </div>
             </div>
             <div class="col-md-4">
@@ -152,7 +228,7 @@
                     <h5 class="title">Best Seller</h5>
                 </div>
                 <div class="slider-container">
-                    <BestSellerComponent/>
+                    <BestSellerComponent :products="bestSellers" />
                 </div>
             </div>
          </div>

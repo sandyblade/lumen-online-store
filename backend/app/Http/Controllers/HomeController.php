@@ -54,29 +54,23 @@ class HomeController extends AppController
         return response()->json($payload);
     }
 
-    public function category()
+
+    public function page()
     {
-        $payload =  Category::select(["id", "name", "image"])->where("status", 1)->where("displayed", 1)->limit(3)->orderBy("name")->get();
+        $categories =  Category::select(["id", "name", "image"])->where("status", 1)->where("displayed", 1)->limit(3)->orderBy("name")->get();
+        $products = Product::where("status", 1)->orderBy("id", "DESC")->with('categories')->limit(4)->get();
+        $topSellings = Product::where("status", 1)->orderBy("total_order", "DESC")->with('categories')->limit(6)->get();
+        $bestSellers = Product::where("status", 1)->orderBy("total_rating", "DESC")->with('categories')->limit(3)->get();
+        $payload = [
+            "categories"   => $categories,
+            "products"     => $products,
+            "topSellings"  => $topSellings,
+            "bestSellers"  => $bestSellers
+        ];
         return response()->json($payload);
     }
 
-    public function newProduct()
-    {
-        $payload = Product::where("status", 1)->orderBy("id", "DESC")->with('categories')->limit(4)->get();
-        return response()->json($payload);
-    }
-
-    public function topSelling()
-    {
-        $payload = Product::where("status", 1)->orderBy("total_order", "DESC")->with('categories')->limit(6)->get();
-        return response()->json($payload);
-    }
-
-    public function bestSeller()
-    {
-        $payload = Product::where("status", 1)->orderBy("total_rating", "DESC")->with('categories')->limit(3)->get();
-        return response()->json($payload);
-    }
+   
 
     public function stream($param)
     {

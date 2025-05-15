@@ -84,6 +84,9 @@ const home = {
     component: async () => {
         return await http().get("/api/home/component")
     },
+    page: async () => {
+        return await http().get("/api/home/page")
+    },
     newsletter: async (data) => {
         return await http().post("/api/newsletter/send", data)
     },

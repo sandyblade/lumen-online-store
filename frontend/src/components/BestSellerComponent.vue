@@ -1,5 +1,7 @@
 <script setup>
 
+    defineProps({ products: Array })
+
     import 'vue3-carousel/carousel.css'
     import { Carousel, Slide } from 'vue3-carousel'
 
