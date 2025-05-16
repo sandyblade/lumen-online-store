@@ -41,6 +41,7 @@
                             <strong class='text-danger me-2'>$ {{ product.price }}</strong><del><strong class='text-muted'>$ {{ product.price_old }}</strong></del>
                             <div class='clearfix text-warning'>
                                 <i class="bi bi-star-fill" v-for="index in product.total_rating" :key="index"></i>
+                                <i class="bi bi-star" v-if="product.total_rating < 5" v-for="idx in (5 - product.total_rating)" :key="idx"></i>
                             </div>
                         </div>
                     </div>
