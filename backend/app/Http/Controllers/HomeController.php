@@ -57,11 +57,11 @@ class HomeController extends AppController
 
     public function page()
     {
-        $categories =  Category::select(["id", "name", "image"])->where("status", 1)->where("displayed", 1)->limit(3)->orderBy("name")->get();
-        $products = Product::where("status", 1)->orderBy("id", "DESC")->with('categories')->limit(4)->get();
-        $topSellings = Product::where("status", 1)->orderBy("total_order", "DESC")->with('categories')->limit(6)->get();
-        $bestSellers = Product::where("status", 1)->orderBy("total_rating", "DESC")->with('categories')->limit(3)->get();
-        $payload = [
+        $categories     = Category::select(["id", "name", "image"])->where("status", 1)->where("displayed", 1)->limit(3)->orderBy("name")->get();
+        $products       = Product::getByPublished(4, 'id', 'desc');
+        $topSellings    = Product::getByPublished(6, 'total_order', 'desc');
+        $bestSellers    = Product::getByPublished(3, 'total_rating', 'desc');
+        $payload        = [
             "categories"   => $categories,
             "products"     => $products,
             "topSellings"  => $topSellings,
