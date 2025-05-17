@@ -5,8 +5,6 @@
     import 'vue3-carousel/carousel.css'
     import { Carousel, Slide } from 'vue3-carousel'
 
-   
-
     const config = {
         itemsToShow: 1,
         gap: 5,

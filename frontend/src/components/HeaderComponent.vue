@@ -11,7 +11,7 @@
 
     const router = useRouter()
     const categorySelected = ref({})
-    const auth_logged = localStorage.getItem('auth_token') !== null
+    const auth_logged = localStorage.getItem('auth_token') !== null && localStorage.getItem('auth_user') !== null
     const auth_user = ref({})
     const search = defineModel('search')
     
@@ -80,7 +80,7 @@
             const keySearch = search.value
             const category = categorySelected.value
             const category_id = category.id ? category.id : 0
-            const url = `store?category=${category_id}&search=${keySearch}`
+            const url =  category_id === 0 ? `store?search=${keySearch}` : `store?category=${category_id}&search=${keySearch}`
             setTimeout(() => { router.push(url) })
         }
     }

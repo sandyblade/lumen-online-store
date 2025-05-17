@@ -25,6 +25,7 @@
 
     const submit = (values) => {
         loading.value = true
+        successResponse.value = ''
         errorResponse.value = ''
         setTimeout(() => { 
             service.auth.forgot(values).then((result) => { 

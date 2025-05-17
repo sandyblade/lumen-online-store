@@ -46,7 +46,7 @@
     <NavbarComponent v-if="loading === false" :categories="categories" />
     <router-view v-if="loading === false" />
     <NewsletterComponent v-if="loading === false" />
-    <FooterComponent v-if="loading === false" />
+    <FooterComponent v-if="loading === false" :categories="categories"  :setting="setting" />
     <a @click="clickToTop" v-if="y > 300 && loading === false" href="#" class="btn btn-lg btn-primary back-to-top">
         <i class="bi bi-chevron-up"></i>
     </a>

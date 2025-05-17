@@ -1,6 +1,23 @@
 <script setup>
+    
+    defineProps({ 
+        categories: Array,
+        setting: {}
+     })
+
+    import { useRouter } from 'vue-router'
+    
     const nowYear = new Date().getFullYear()
     const author = "Sandy Andryanto"
+    const router = useRouter()
+
+    function handleFilter(e, category_id){
+        e.preventDefault();
+        e.stopImmediatePropagation()
+        const url = `store?category=${category_id}`
+        setTimeout(() => { router.push(url) })
+    }
+    
 </script>
 <template>
     <footer id="footer" class="footer text-light">
@@ -10,11 +27,11 @@
                     <div class="col-md-3">
                         <div class="footer">
                             <h3 class="footer-title">About Us</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
+                            <p>{{ setting.about_section }}</p>
                             <ul class="footer-links">
-                                <li><a href="#"><i class="bi bi-pin-map me-2 text-white"></i>West Java, Indonesia</a></li>
-                                <li><a href="https://wa.me/628989218470"><i class="bi bi-telephone-outbound me-2 text-white"></i>+62-898-921-8470</a></li>
-                                <li><a href="#"><i class="bi bi-envelope me-2 text-white"></i>sandy.andryanto.blade@gmail.com</a></li>
+                                <li><a href="#"><i class="bi bi-pin-map me-2 text-white"></i>{{ setting.com_location }}</a></li>
+                                <li><a href="#"><i class="bi bi-telephone-outbound me-2 text-white"></i>{{ setting.com_phone }}</a></li>
+                                <li><a href="#"><i class="bi bi-envelope me-2 text-white"></i>{{ setting.com_email }}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -22,11 +39,8 @@
                         <div class="footer">
                             <h3 class="footer-title">Categories</h3>
                             <ul class="footer-links">
-                                <li><a href="#">Hot deals</a></li>
-                                <li><a href="#">Laptops</a></li>
-                                <li><a href="#">Smartphones</a></li>
-                                <li><a href="#">Cameras</a></li>
-                                <li><a href="#">Accessories</a></li>
+                                <li><a href="#" @click="(event) => handleFilter(event, 0)">Hot deals</a></li>
+                                <li v-for="category in categories"><a class="dropdown-item" href="#"  @click="(event) => handleFilter(event, category.id)" >{{ category.name }}</a></li>
                             </ul>
                         </div>
                     </div>

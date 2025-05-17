@@ -1,14 +1,145 @@
 <script setup>
-    
-    import VueSlider from "vue-3-slider-component"
-    import { ref } from "vue"
-    
-    const filterPrice = ref([100, 500])
-    const totalProduct = 9
 
-    function getCode(num){
-        return (num).toString().padStart(2,"0");
+    import { Vue3BsPaginate } from 'vue3-bootstrap-paginate';
+    import queryString from 'query-string'
+    import Shimmer from "vue3-loading-shimmer"
+    import { useRouter } from 'vue-router'
+    import VueSlider from "vue-3-slider-component"
+    import { ref, onMounted } from 'vue'
+    import services from "../services"
+
+    const auth_logged = localStorage.getItem('auth_token') !== null && localStorage.getItem('auth_user') !== null
+    const loadingSidebar = ref(true)
+    const loadingProduct = ref(true)
+    const categories = ref([])
+    const products = ref({})
+    const brands = ref([])
+    const topselling = ref([])
+    const filterCategory = ref([])
+    const filterBrand = ref([])
+    const filterPrice = ref([100, 500])
+    const sortBy = ref('published_date,desc')
+    const limit = ref(9)
+    const search = ref('')
+    const page = ref(1)
+    const router = useRouter()
+    const pagination = ref(null)
+
+
+    function loadProduct(){
+
+        let fCategories = filterCategory.value
+        let fBrands = filterBrand.value
+        let fPrices = filterPrice.value
+
+        let params = {
+            sort: sortBy.value,
+            limit: limit.value,
+            page: page.value,
+            price: `${fPrices.join("|")}`
+        }
+
+        if (fCategories.length > 0) {
+            params = {
+                ...params,
+                category: `${fCategories.join(",")}`
+            }
+        }
+
+        if (fBrands.length > 0) {
+            params = {
+                ...params,
+                brand: `${fBrands.join(",")}`
+            }
+        }
+
+        if (search.value) {
+            params = {
+                ...params,
+                search: search.value
+            }
+        }
+
+        loadingProduct.value = true
+        const filterQueryParam = decodeURIComponent(queryString.stringify(params))
+        const url = `store?${filterQueryParam}`
+        router.push(url)
+
+        setTimeout(async () => {
+            await services.store.list(filterQueryParam)
+            .then((response) => {
+                products.value = response.data
+                setTimeout(() => {
+                    loadingProduct.value = false    
+                }, 1500)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+        }, 1500)
+        
     }
+
+    async function loadSidebar(){
+        loadingSidebar.value = true
+        await services.store.filter()
+            .then((response) => {
+                let data = response.data
+                brands.value = data.brands
+                categories.value = data.categories
+                topselling.value = data.tops
+                setTimeout(() => {
+                    loadingSidebar.value = false
+                }, 1500)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
+   
+
+
+
+    onMounted(() => {
+
+        if (queryString.parse(location.search)) {
+               
+            const parsed = queryString.parse(location.search);
+
+            if (parsed.category !== undefined){
+                filterCategory.value = parsed.category.split(",")
+            }
+
+            if (parsed.price !== undefined){    
+                filterPrice.value = parsed.price.split("|")
+            }
+
+            if (parsed.brand !== undefined){
+                filterBrand.value = parsed.brand.split(",")
+            }
+
+            if (parsed.limit !== undefined) {
+                limit.value = parsed.limit
+            }
+
+            if (parsed.page !== undefined) {
+                page.value = parsed.page
+            }
+
+            if (parsed.search !== undefined) {
+                search.value = parsed.search
+            }
+
+            if (parsed.sort !== undefined) {
+                sortBy.value = parsed.sort
+            }
+
+        } 
+        
+        loadSidebar()
+        loadProduct()
+    })
 
 </script>
 <template>
@@ -32,229 +163,164 @@
             <div class="row">
                 <div class="col-md-3">
 
+
+                    <div class="mb-4" v-if="loadingSidebar">
+                        <Shimmer style="height: 20rem; border-radius: 5px;" />
+                    </div>
+                    <div v-else>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Sort By</label>
+                            <select class="form-control" v-model="sortBy">
+                                <option value="published_date,desc">Released Date</option>
+                                <option value="total_rating,desc">Rating</option>
+                                <option value="price,asc">Lowest Price</option>
+                                <option value="price,desc">Highest Price</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Show</label>
+                            <select class="form-control" v-model="limit">
+                                <option value="9">9 Products</option>
+                                <option value="27">27 Products</option>
+                                <option value="36">36 Products</option>
+                                <option value="90">90 Products</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <h4 class='text-uppercase mb-4'>Categories</h4>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="payment" >
-                        <label class="form-check-label">
-                            Laptops (120)
-                        </label>
+                    <div v-if="loadingSidebar">
+                        <Shimmer style="height: 20rem; border-radius: 5px;" />
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="payment" >
-                        <label class="form-check-label">
-                            Smartphones (740)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="payment" >
-                        <label class="form-check-label">
-                            Cameras (1450)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="payment" >
-                        <label class="form-check-label">
-                           Accessories (578)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="payment" >
-                        <label class="form-check-label">
-                           Smartphones (740)
-                        </label>
+                    <div v-else>
+                        <div class="form-check" v-for="category in categories">
+                            <input class="form-check-input" type="checkbox" name="category" :value="category.id" v-model="filterCategory">
+                            <label class="form-check-label">
+                                {{ category.name }} ({{ category.products.length }})
+                            </label>
+                        </div>
                     </div>
 
                     <h4 class='text-uppercase mt-4 mb-4'>Price</h4>
-                    <div class="mt-2  mb-4">
-                        <VueSlider v-model="filterPrice" :min="0" :max="1000" adsorb />
+                    <div v-if="loadingSidebar">
+                        <Shimmer style="height: 20rem; border-radius: 5px;" />
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label text-success fw-bold">Minimum Price ($) </label>
-                        <input  type="text" class="form-control text-end" readonly :value="filterPrice[0]">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-danger fw-bold">Maximum Price ($) </label>
-                        <input  type="text" class="form-control text-end" readonly :value="filterPrice[1]">
+                    <div v-else>
+                        <div class="mt-2  mb-4">
+                            <VueSlider v-model="filterPrice" :min="0" :max="1000" adsorb />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-success fw-bold">Minimum Price ($) </label>
+                            <input  type="text" class="form-control text-end" readonly :value="filterPrice[0]">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-danger fw-bold">Maximum Price ($) </label>
+                            <input  type="text" class="form-control text-end" readonly :value="filterPrice[1]">
+                        </div>
                     </div>
 
                     <h4 class='text-uppercase mb-4 mt-2'>Brands</h4>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox">
-                        <label class="form-check-label">
-                           SAMSUNG (578)
-                        </label>
+                    <div v-if="loadingSidebar">
+                        <Shimmer style="height: 20rem; border-radius: 5px;" />
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox">
-                        <label class="form-check-label">
-                           LG (125)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox">
-                        <label class="form-check-label">
-                           SONY (755)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox">
-                        <label class="form-check-label">
-                           ASUS (578)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox">
-                        <label class="form-check-label">
-                           APPLE (125)
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox">
-                        <label class="form-check-label">
-                            MICROSOFT (755)
-                        </label>
+                    <div v-else>
+                        <div class="form-check" v-for="brand in brands">
+                            <input class="form-check-input" type="checkbox" name="brand" :value="brand.id" v-model="filterBrand">
+                            <label class="form-check-label">
+                                {{ brand.name }} ({{ brand.product.length }})
+                            </label>
+                        </div>
+                        <button @click="loadProduct" class="btn btn-primary btn-sm mt-4 w-100">
+                            <i class="fas fa-filter me-2"></i>Apply Filter
+                        </button>
                     </div>
 
                     <h4 class='text-uppercase mt-4 mb-4'>Top Selling</h4>
-                    <div class="d-block">
-                        <div class="card border-0 mb-2">
-                            <div class="card-body clearfix">
-                                <div class="float-start">
-                                     <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product01.png" class='img img-responsive text-center' width="80"  alt="image" />
-                                </div>
-                                <div class="float-end">
-                                    <small class='text-primary d-block'>CATEGORY</small>  
-                                    <small class="fw-bolder d-block">Product Name Goes Here</small>
-                                    <small class='text-danger me-2'>$980.00</small><del><small class='text-muted'>$990.00</small></del>
-                                    <div class="clearfix text-warning">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star"></i>
+                    <div v-if="loadingSidebar">
+                        <Shimmer style="height: 20rem; border-radius: 5px;" />
+                    </div>
+                    <div v-else>
+                        <div class="d-block" v-for="product in topselling">
+                            <div class="card border-0 mb-2">
+                                <div class="card-body clearfix">
+                                    <div class="float-start">
+                                        <img :src="product.image" class='img img-responsive text-center' width="100"  alt="image" />
+                                    </div>
+                                    <div class="float-start">
+                                        <div class="ms-4">
+                                            <small class='text-primary d-block'>{{ product.category }}</small>  
+                                            <small class="fw-bolder d-block">{{ product.name }}</small>
+                                            <small class='text-danger me-2'>$ {{ product.price }}</small><del><small class='text-muted'>$ {{ product.price_old }}</small></del>
+                                            <div class="clearfix text-warning">
+                                                <i class="bi bi-star-fill" v-for="index in product.total_rating" :key="index"></i>
+                                                <i class="bi bi-star" v-if="product.total_rating < 5" v-for="idx in (5 - product.total_rating)" :key="idx"></i>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="d-block">
-                        <div class="card border-0 mb-2">
-                            <div class="card-body clearfix">
-                                <div class="float-start">
-                                     <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product02.png" class='img img-responsive text-center' width="80"  alt="image" />
-                                </div>
-                                <div class="float-end">
-                                    <small class='text-primary d-block'>CATEGORY</small>  
-                                    <small class="fw-bolder d-block">Product Name Goes Here</small>
-                                    <small class='text-danger me-2'>$980.00</small><del><small class='text-muted'>$990.00</small></del>
-                                    <div class="clearfix text-warning">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-block">
-                        <div class="card border-0 mb-2">
-                            <div class="card-body clearfix">
-                                <div class="float-start">
-                                     <img src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product03.png" class='img img-responsive text-center' width="80"  alt="image" />
-                                </div>
-                                <div class="float-end">
-                                    <small class='text-primary d-block'>CATEGORY</small>  
-                                    <small class="fw-bolder d-block">Product Name Goes Here</small>
-                                    <small class='text-danger me-2'>$980.00</small><del><small class='text-muted'>$990.00</small></del>
-                                    <div class="clearfix text-warning">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
                 </div>
                 <div class="col-md-9">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="mb-3">
-                               <label class="form-label fw-bold">Sort By</label>
-                               <select class="form-control">
-                                    <option selected>Released Date</option>
-                                    <option>Rating</option>
-                                    <option>Lowest Price</option>
-                                    <option>Highest Price</option>
-                               </select>
+                    <div v-if="loadingProduct">
+                       <div class="row">
+                            <div v-for="i in 12" class="col-md-4 col-xs-6 mb-2">
+                                <Shimmer style="height: 20rem; border-radius: 5px;" />
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="mb-3">
-                               <label class="form-label fw-bold">Show</label>
-                               <select class="form-control">
-                                    <option selected>10 Products</option>
-                                    <option>25 Products</option>
-                                    <option>50 Products</option>
-                                    <option>100 Products</option>
-                               </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                               <label class="form-label fw-bold">Search</label>
-                               <div class="input-group">
-                                    <input type="text"  placeholder='Search here..' class="form-control" aria-label="Text input with dropdown button">
-                                    <button class="btn btn-primary" type="button" >
-                                        <span class="text-white"><i class="bi bi-search mb-1 me-1"></i>Search</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                       </div>
                     </div>
-                    <div class="row mt-4">
-                        <div class="col-md-4 col-xs-6" v-for="p in totalProduct">
-                            <div class="card mb-3">
-                                <img :src="`https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product`+getCode(p)+`.png`" class="card-img-top" alt="" />
-                                <div class="card-body p-4">
-                                    <h5 class='text-primary'>CATEGORY {{ p }}</h5>  
-                                    <h6 class="fw-bolder">Product Name Goes Here</h6>
-                                    <strong class='text-danger me-2'>$980.00</strong><del><strong class='text-muted'>$990.00</strong></del>
-                                    <div class="d-flex small text-warning">
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star-fill"></i>
-                                        <i class="bi bi-star"></i>
-                                        <i class="bi bi-star"></i>
-                                        <i class="bi bi-star"></i>
+                    <div v-else>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                <label class="form-label fw-bold">Search</label>
+                                <div class="input-group">
+                                        <input type="text" v-model="search"  placeholder='Search here..' class="form-control" aria-label="Text input with dropdown button">
+                                        <button  @click="loadProduct" class="btn btn-primary" type="button" >
+                                            <span class="text-white"><i class="bi bi-search mb-1 me-1"></i>Search</span>
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="card-footer bg-transparent text-center border-top-0">
-                                    <a href="#" class="btn btn-primary text-white w-100 mb-2">
-                                        <i class="bi bi-cart-plus mb-1 me-1"></i>Add To Cart
-                                    </a>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-4 col-xs-6" v-for="product in products.list">
+                                <div class="card mb-3">
+                                    <img :src="product.image" class="card-img-top" alt="" />
+                                    <div class="card-body p-4">
+                                        <h6 class="fw-bolder">{{ product.name }}</h6>
+                                        <strong class='text-danger me-2'>$ {{ product.price }}</strong><del><strong class='text-muted'>$ {{ product.price_old }}</strong></del>
+                                        <div class="d-flex small text-warning">
+                                            <i class="bi bi-star-fill" v-for="index in product.total_rating" :key="index"></i>
+                                            <i class="bi bi-star" v-if="product.total_rating < 5" v-for="idx in (5 - product.total_rating)" :key="idx"></i>
+                                        </div>
+                                        <span class='text-primary fw-bold mt-4'>
+                                            <small>{{ product.category.join(", ") }}</small>
+                                        </span>  
+                                    </div>
+                                    <div class="card-footer bg-transparent text-center border-top-0" v-if="auth_logged">
+                                        <a href="#" class="btn btn-primary text-white w-100 mb-2">
+                                            <i class="bi bi-cart-plus mb-1 me-1"></i>Add To Cart
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mt-5">
-                        <div class="col-md-9">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination">
-                                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                                </ul>
-                            </nav>
-                        </div>
-                        <div class="col-md-3 text-end">
-                            <small class='text-muted mt-2'>Showing 20-100 products</small>
+                        <div class="row mt-5">
+                            <div class="col-md-9">   
+                                <Vue3BsPaginate
+                                    :total="products.total_filtered"
+                                    v-model="page"
+                                    :perPage="limit"
+                                    :onChange="loadProduct"
+                                    alignment="left"
+                                    ref="pagination"
+                                />  
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <small class='text-muted mt-2'>Showing {{ products.limit }} - {{ products.total_filtered }} products</small>
+                            </div>
                         </div>
                     </div>
                 </div>

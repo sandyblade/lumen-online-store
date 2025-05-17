@@ -15,7 +15,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\NewsLetter;
-
+    
 class NewsletterController extends AppController
 {
     public function send(Request $request)

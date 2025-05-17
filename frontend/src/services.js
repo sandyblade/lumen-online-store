@@ -92,11 +92,21 @@ const home = {
     },
 }
 
+const store = {
+    list: async (params) => {
+        return await http().get(`/api/shop/list?${params}`)
+    },
+    filter: async () => {
+        return await http().get("/api/shop/filter")
+    },
+}
+
 export default {
     ping,
     getFile,
     expiredMessage,
     auth,
     profile,
+    store,
     home
 }

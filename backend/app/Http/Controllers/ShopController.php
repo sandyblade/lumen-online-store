@@ -22,6 +22,12 @@ class ShopController extends AppController
 {
     public function list(Request $request)
     {
+
+        $maxRating = Product::where("status", 1)
+            ->where('total_rating', '>', 0)
+            ->orderBy("total_rating", "desc")
+            ->first();
+
         $limit  = $request->input("limit", 10);
         $page   = $request->input("page", 1);
         $offset = (($page - 1) * $limit);
@@ -50,20 +56,46 @@ class ShopController extends AppController
         }
 
         if ($request->input("price")) {
-            $range = explode(",", $request->price);
+            $range = explode("|", $request->price);
             $min = isset($range[0]) ? $range[0] : 0;
             $max = isset($range[1]) ? $range[1] : 0;
-            $products = $products->where("price", ">=", $min)->where("price", "<=", $max);
+            $products = $products->whereRaw("price BETWEEN ".$min." AND ".$max." ");
+        }
+
+        $order = ["id", "DESC"];
+
+        if ($request->input("sort")) {
+            $sorts = explode(",", $request->input("sort"));
+            $order = [$sorts[0], $sorts[1]];
         }
 
         $total_filtered = $products->count();
-        $products = $products->limit($limit)->offset($offset)->orderBy("id", "DESC")->get();
+        $products = $products->limit($limit)->offset($offset)->orderBy($order[0], $order[1])->get();
+
+        $products = $products->map(function ($row, $index) use ($total_all, $maxRating) {
+            $price = (float) $row->price;
+            $price_old = (float) $row->price + ($row->price * 0.05);
+            $rating = $row->total_rating;
+            if($maxRating != null){
+                $rating = ((($row->total_rating / $maxRating->total_rating) * 100) / 20);
+            }
+            return [
+                "id"=> $row->id,
+                "name"=> $row->name,
+                "image"=> $row->image,
+                "category"=> $row->categories->pluck("name")->toArray(),
+                "price"=> $price,
+                "price_old"=> $price_old,
+                "total_rating"=> round($rating)
+            ];
+        });
 
 
         $payload = [
             "list" => $products,
             "total_all" => $total_all,
-            "total_filtered" => $total_filtered
+            "total_filtered" => $total_filtered,
+            "limit"=> $limit
         ];
 
         return response()->json($payload);
@@ -73,7 +105,7 @@ class ShopController extends AppController
     {
         $categories = Category::where("status", 1)->orderBy("name")->with('products')->get();
         $brands = Brand::where("status", 1)->orderBy("name")->with('product')->get();
-        $topselling = Product::where("status", 1)->orderBy("total_order", "DESC")->with('categories')->limit(3)->get();
+        $topselling = Product::getByPublished(3, 'total_order', 'desc');
         return response()->json(["categories" => $categories, "brands" => $brands, "tops" => $topselling]);
     }
 }

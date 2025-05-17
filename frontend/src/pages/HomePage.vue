@@ -11,6 +11,8 @@
     const products = ref([])
     const topSellings = ref([])
     const bestSellers = ref([])
+    const activeTab1 = ref(0)
+    const activeTab2 = ref(0)
 
     async function loadData(){
         loading.value = true
@@ -23,12 +25,26 @@
                     topSellings.value = data.topSellings
                     bestSellers.value = data.bestSellers
                     loading.value = false
+                    activeTab1.value = data.categories[0].id
+                    activeTab2.value = data.categories[0].id
                 }, 1500)
             }).catch((error) => {
             console.log(error)
        })
     }
 
+    function setTab1(e, index) {
+        e.preventDefault();
+        e.stopImmediatePropagation()
+        activeTab1.value = index
+    }
+
+    function setTab2(e, index){
+        e.preventDefault();
+        e.stopImmediatePropagation()
+        activeTab2.value = index
+    }
+    
     onMounted(() => {
        loadData()
     })
@@ -91,10 +107,11 @@
                     <h3 class="title">New Products</h3>
                     <div class="section-nav">
                         <ul class="section-tab-nav tab-nav">
-                            <li><a data-toggle="tab" href="#tab2" class='text-decoration-none'>Laptops</a></li>
-                            <li class="active"><a data-toggle="tab" href="#" class='text-decoration-none'>Smartphones</a></li>
-                            <li><a data-toggle="tab" href="#" class='text-decoration-none'>Cameras</a></li>
-                            <li><a data-toggle="tab" href="#" class='text-decoration-none'>Accessories</a></li>
+                            <li v-for="category in categories" :class="activeTab1 === category.id ? 'active' : ''">
+                                <a data-toggle="tab" href="#" @click="(event) => setTab1(event, category.id)" class='text-decoration-none'>
+                                    {{ category.name }}
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -179,10 +196,11 @@
                     <h3 class="title">Top Selling</h3>
                     <div class="section-nav">
                         <ul class="section-tab-nav tab-nav">
-                            <li><a data-toggle="tab" href="#tab2" class='text-decoration-none'>Laptops</a></li>
-                            <li class="active"><a data-toggle="tab" href="#" class='text-decoration-none'>Smartphones</a></li>
-                            <li><a data-toggle="tab" href="#" class='text-decoration-none'>Cameras</a></li>
-                            <li><a data-toggle="tab" href="#" class='text-decoration-none'>Accessories</a></li>
+                            <li v-for="category in categories" :class="activeTab2 === category.id ? 'active' : ''">
+                                <a data-toggle="tab" href="#" @click="(event) => setTab2(event, category.id)" class='text-decoration-none'>
+                                    {{ category.name }}
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
