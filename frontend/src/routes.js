@@ -12,7 +12,9 @@ import ProfilePage from "./pages/ProfilePage.vue"
 import RegisterPage from "./pages/RegisterPage.vue"
 import ResetPasswordPage from "./pages/ResetPasswordPage.vue"
 import StorePage from "./pages/StorePage.vue"
+import OrderPage from "./pages/OrderPage.vue";
 
+const logged = localStorage.getItem('auth_token') !== null && localStorage.getItem('auth_user') !== null
 
 const routes = [
     {
@@ -22,20 +24,29 @@ const routes = [
         meta: { layout: AppComponent },
     },
     {
-        path: "/checkout",
-        name: "Checkout",
-        component: CheckoutPage,
+        path: "/order",
+        name: "Order",
+        component: logged ? OrderPage : ErrorPage,
         meta: { layout: AppComponent },
     },
     {
-        path: "/cart",
+        path: "/checkout",
+        name: "Checkout",
+        props: { loadOrder: null, setting: null },
+        component: logged ? CheckoutPage : ErrorPage,
+        meta: { layout: AppComponent },
+    },
+    {
+        path: "/cart/:id",
         name: "Cart",
-        component: CartPage,
+        props: { loadOrder: null, setting: null },
+        component: logged ? CartPage : ErrorPage,
         meta: { layout: AppComponent },
     },
     {
         path: "/",
         name: "Home",
+        props: { loadOrder: null },
         component: HomePage,
         meta: { layout: AppComponent },
     },
@@ -66,13 +77,13 @@ const routes = [
     {
         path: "/account/password",
         name: "AccountPassword",
-        component: PasswordPage,
+        component: logged ? PasswordPage : ErrorPage,
         meta: { layout: AppComponent },
     },
     {
         path: "/account/profile",
         name: "AccountProfile",
-        component: ProfilePage,
+        component: logged ? ProfilePage : ErrorPage,
         meta: { layout: AppComponent },
     },
     {
@@ -90,7 +101,8 @@ const routes = [
     {
         path: "/store",
         name: "Store",
-        component: StorePage,
+        props: { loadOrder: null, setting: null },
+        component: logged ? StorePage : ErrorPage,
         meta: { layout: AppComponent },
     },
 ]

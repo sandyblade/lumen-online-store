@@ -27,8 +27,6 @@ class HomeController extends AppController
     {
         $setting = Setting::getAll();
         $categories = Category::select(["id", "name"])->where("status", 1)->orderBy("name")->get();
-        $wishlists = [];
-        $carts = [];
 
         if(Auth::User())
         {
@@ -38,7 +36,6 @@ class HomeController extends AppController
             */
             $user = Auth::User();
             $productSelect = ["id", "name", "price", "image"];
-            $wishlists = $user->Wishlists()->select($productSelect)->get();
             $orders = Order::where("user_id", $user->id)->where("status", 0)->get();
             foreach($orders as $order){
                 $carts[] = $order->Carts()->select($productSelect)->get();
@@ -48,8 +45,6 @@ class HomeController extends AppController
         $payload = [
             "setting"    => $setting,
             "categories" => $categories,
-            "wishlists"  => $wishlists,
-            "carts"      => $carts
         ];
         return response()->json($payload);
     }

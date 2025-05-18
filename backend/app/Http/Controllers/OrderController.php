@@ -37,14 +37,90 @@ class OrderController extends AppController
 
     public function billing()
     {
+        
+        $user = Auth::User();
+        $order = Order::where("user_id", $user->id)->where("status", 0)->orderBy("id", "desc")->first();
+        $checkBilling = OrderBilling::where("order_id", $order->id)->first();
+        $payments = Payment::where("status", 1)->orderBy("name")->get();
+
+        $cart = OrderDetail::where("orders.id", $order->id)
+            ->selectRaw("
+                products.name,
+                products.image,
+                products.price,
+                SUM(orders_details.qty) as total_item,
+                (products.price * SUM(orders_details.qty)) as subtotal
+            ")
+            ->join("products_inventories", "products_inventories.id", "orders_details.product_inventory_id")
+            ->join("orders", "orders.id", "orders_details.order_id")
+            ->join("products", "products.id", "products_inventories.product_id")
+            ->groupBy([
+                "products.name",
+                "products.image",
+                "products.price"
+            ])
+            ->get();
+
+        $user->notes = "";
+        $lastBilling = OrderBilling::getByOrder($order->id);
+        $payload = [
+            "cart"      => $cart,
+            "order"     => $order,
+            "payments"  => $payments,
+            "billing"   => is_null($checkBilling) ? $user :  $lastBilling,
+        ];
+        return response()->json($payload);
+    }
+
+    public function cancel()
+    {
+        $user = Auth::User();
+        $order = Order::where("user_id", $user->id)->where("status", 0)->orderBy("id", "desc")->first();
+
+        if (is_null($order)) {
+            return response()->json(['message' => 'These prder do not match our records.'], 404);
+        }
+
+        $order->carts()->detach();
+        OrderBilling::where("order_id", $order->id)->delete();
+        OrderDetail::where("order_id", $order->id)->delete();
+        Order::where("id", $order->id)->delete();
+        $this->activity($user->id, "Cancel Order", "Canceling Current Order", "Your has been canceling current order.");
+        return response()->json(['message'=> 'Your order has been removed.']);
+    }
+
+    public function product()
+    {
         $user = Auth::User();
         $order = Order::where("user_id", $user->id)->orderBy("id", "desc")->first();
-        if (is_null($order)) {
-            return response()->json($user);
-        } else {
-            $billing = OrderBilling::getByOrder($order->id);
-            return response()->json($billing);
-        }
+        $cart = OrderDetail::where("orders.user_id", $user->id)
+            ->where("orders.status", 0)
+            ->selectRaw("
+                products.name,
+                products.image,
+                products.price,
+                SUM(orders_details.qty) as total_item,
+                (products.price * SUM(orders_details.qty)) as subtotal
+            ")
+            ->join("products_inventories", "products_inventories.id", "orders_details.product_inventory_id")
+            ->join("orders", "orders.id", "orders_details.order_id")
+            ->join("products", "products.id", "products_inventories.product_id")
+            ->groupBy([
+                "products.name",
+                "products.image",
+                "products.price"
+            ])
+            ->get();
+
+        $wishlist = $user->Wishlists()->select(["id", "name", "image", "price"])->get();
+
+        $payload = [
+            "order"     => $order,            
+            "cart"      => $cart,
+            "wishlist"  => $wishlist
+        ];
+
+        return response()->json($payload);
     }
 
     public function cart($id)
@@ -55,22 +131,50 @@ class OrderController extends AppController
             return response()->json(['message' => 'These product do not match our records.'], 404);
         }
 
+        $maxRating = Product::where("status", 1)
+            ->where('total_rating', '>', 0)
+            ->orderBy("total_rating", "desc")
+            ->first();
+
         $images = ProductImage::where("product_id", $id)
             ->select(["id", "path"])
             ->where("status", 1)
             ->orderBy("sort")
             ->get();
         
-        $stocks     = ProductInventory::where("product_id", $id)->where("stock", ">", 0)->where("status", 1)->get();
-        $reviews    = ProductReview::where("product_id", $id)->with('user')->get();
+        $stocks = ProductInventory::where("product_id", $id)->where("stock", ">", 0)->where("status", 1)->get();
+       
         $categories = $product->Categories()->get()->pluck("id")->toArray();
 
-        $related    = Product::where("status", 1)->with('categories')->where("id", "!=", $id)->whereHas('categories', function ($query) use ($categories) {
+        $related = Product::where("status", 1)->with('categories')->where("id", "!=", $id)
+            ->whereHas('categories', function ($query) use ($categories) {
             $query->whereIn('category_id', $categories);
         })
         ->orderBy("total_rating", "desc")
         ->limit(4)
         ->get();
+
+        $related = $related->map(function ($row, $index) use ($maxRating) {
+
+            $price = (float) $row->price;
+            $price_old = (float) $row->price + ($row->price * 0.05);
+            $rating = $row->total_rating;
+
+            if($maxRating != null){
+                $rating = ((($row->total_rating / $maxRating->total_rating) * 100) / 20);
+            }
+
+            return [
+                "id"=> $row->id,
+                "name"=> $row->name,
+                "image"=> $row->image,
+                "category"=> $row->categories->pluck("name")->first(),
+                "price"=> $price,
+                "price_old"=> $price_old,
+                "total_rating"=> floor($rating)
+            ];
+        });
+
 
         $sizes = Size::where("status", 1)->whereHas('ProductInventory', function ($query) use ($id) {
             $query->where('product_id', $id);
@@ -88,17 +192,41 @@ class OrderController extends AppController
         ->orderBy("name")
         ->get();
 
+        $price_old = (float) $product->price + ($product->price * 0.05);
+        
+        if(!is_null($maxRating)){
+            $product->total_rating = ((($product->total_rating / $maxRating->total_rating) * 100) / 20);
+            $product->total_rating = floor($product->total_rating);
+        }
+
         $payload = [
-            "product" => $product,
-            "images"  => $images,
-            "stocks"  => $stocks,
-            "reviews" => $reviews,
-            "related" => $related,
-            "sizes"   => $sizes,
-            "colours" => $colours
+            "product"   => $product,
+            "images"    => $images,
+            "stocks"    => $stocks,
+            "related"   => $related,
+            "sizes"     => $sizes,
+            "colours"   => $colours,
+            "price_old" => $price_old
         ];
 
         return response()->json($payload);
+    }
+
+    public function listReview($id)
+    {
+        $reviews  = ProductReview::where("product_id", $id)->with('user')->orderBy("id", "desc")->get();
+        $reviews = $reviews->map(function ($row) {
+            $rating_index = ($row->rating/100) * 5;
+            return [
+                "id"=> $row->id,
+                "created_at"=> $row->created_at->diffForHumans(),
+                "user"=> $row->user,
+                "rating"=> $row->rating,
+                "review"=> $row->review,
+                "rating_index"=> floor($rating_index)
+            ];
+        });
+        return response()->json($reviews);
     }
 
     public function wishlist($id)
@@ -127,14 +255,14 @@ class OrderController extends AppController
         $this->validate($request, [
             'email'     => 'required|string|email|max:180',
             'name'      => 'required|string|max:200',
-            'review'    => 'required|string|max:200|min:20',
+            'review'    => 'required|string|max:200|min:5',
         ]);
 
         $user = Auth::User();
         $model = new ProductReview();
         $model->product_id = $id;
         $model->user_id = $user->id;
-        $model->rating = $request->input('rating', 0);
+        $model->rating = $request->input('rating', 0) * 20;
         $model->review = $request->input('review');
         $model->status = 1;
         $model->save();
@@ -189,13 +317,11 @@ class OrderController extends AppController
         if(is_null($order))
         {
             $order = new Order();
+            $order->user_id = $user->id;
             $order->invoice_number = date("Ymd")."".(floor(microtime(true) * 1000));
             $order->status = 0;
         }
 
-        $order->size_id = $request->input('size_id');
-        $order->color_id = $request->input('color_id');
-        $order->qty = $request->input('qty');
         $order->total_item = $order->total_item + $request->input('qty');
         $order->save();
 
@@ -218,7 +344,7 @@ class OrderController extends AppController
         $totalItem = OrderDetail::where("order_id", $order->id)->sum('qty');
         $totalSubTotal = OrderDetail::where("order_id", $order->id)->sum('total');
         $discount = (float) Setting::getConfig("discount_value");
-        $taxes = (float) Setting::getConfig("tax_value");
+        $taxes = (float) Setting::getConfig("taxes_value");
         $shipment = (float) Setting::getConfig("total_shipment");
         $updateOrder = $order;
 
@@ -320,7 +446,7 @@ class OrderController extends AppController
         }
 
         # Update Inventories, Product, Whislist
-        $details = OrderDetail::where("order_id", $id)->get();
+        $details = OrderDetail::where("order_id", $id)->with('ProductInventory')->get();
         foreach($details as $detail){
             
             $qty = $detail->qty;
@@ -328,7 +454,7 @@ class OrderController extends AppController
             $stock->stock = $stock->stock - $qty;
             $stock->save();
 
-            $product = $stock->ProductInventory()->Product()->first();
+            $product = $detail->ProductInventory()->first()->Product()->first();
             $product->total_order = $product->total_order + $qty;
             $product->Wishlists()->detach($user->id);
             $product->save();

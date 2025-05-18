@@ -225,20 +225,13 @@ class DatabaseSeeder extends Seeder
             "com_phone"             => "+62-898-921-8470",
             "com_email"             => "sandy.andryanto.blade@gmail.com",
             "com_currency"          => "USD",
-            "img_hotdeal"           => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/hotdeal.png",
-            "img_logo"              => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/logo.png",
-            "img_app"               => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/app.png",
-            "img_shop1"             => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop01.png",
-            "img_shop2"             => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop02.png",
-            "img_shpp3"             => "https://5an9y4lf0n50.github.io/demo-images/demo-commerce/shop03.png",
             "installed"             => 1,
-            "hot_deal_title"        => "hot deal this week",
-            "hot_deal_description"  => "New Collection Up to 50% OFF",
             "discount_active"       => 1,
-            "discount_value"        => 50,
+            "discount_value"        => 5,
             "discount_start"        => date("Y-m-d H:i:s"),
             "discount_end"          => date("Y-m-d H:i:s", strtotime("+7 day")),
-            "taxes_value"           => 10
+            "taxes_value"           => 10,
+            "total_shipment"        => 50
         ];
 
         foreach ($settings as $key => $value) {

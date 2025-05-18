@@ -86,7 +86,7 @@ class ShopController extends AppController
                 "category"=> $row->categories->pluck("name")->toArray(),
                 "price"=> $price,
                 "price_old"=> $price_old,
-                "total_rating"=> round($rating)
+                "total_rating"=> floor($rating)
             ];
         });
 

@@ -34,7 +34,7 @@ class OrderBilling extends Model
     public static function getByOrder($order_id)
     {
         $result = [];
-        $data = self::where("order_id", $order_id)->orderBy("id")->get();
+        $data = self::where("order_id", "!=", $order_id)->orderBy("id", "desc")->get();
         foreach ($data as $row) {
             $result[$row->name] = $row->description;
         }

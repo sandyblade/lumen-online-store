@@ -1,12 +1,12 @@
 <script setup>
 
-    defineProps({ products: Array })
-
     import 'vue3-carousel/carousel.css'
     import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
+    import services from '../services'
+    import { ref, inject } from 'vue'
 
-    
-
+    const swal = inject('$swal')
+    const props = defineProps(['loadOrder', 'products'])
     const config = {
         itemsToShow: 3.5,
         gap: 5,
@@ -15,6 +15,36 @@
         pauseAutoplayOnHover: true,
     }
 
+    const loadingSubmitWhishlist = ref(false)
+    const whishlist = ref(0)
+    const logged = localStorage.getItem('auth_token') !== null && localStorage.getItem('auth_user') !== null
+
+    function addWhishlist(id){
+        whishlist.value = id
+        loadingSubmitWhishlist.value = true
+        setTimeout(() => { 
+            services.order.wishlist(id).then((result) => { 
+                loadingSubmitWhishlist.value = false
+                whishlist.value = 0
+                props.loadOrder()
+                swal.fire({
+                    title: "Success !!",
+                    text: result.data.message,
+                    icon: "success"
+                });
+            })
+            .catch((error) => {
+                console.log(error)
+                loadingSubmitWhishlist.value = false
+                const msg = error.status === 401 ? services.expiredMessage : (error.response.data?.message || error.message)
+                swal.fire({
+                    title: "Failed !!",
+                    text: msg,
+                    icon: "error"
+                });
+            });
+        }, 1500)
+    }
 
 </script>
 
@@ -41,8 +71,8 @@
                         <i class="bi bi-star" v-if="product.total_rating < 5" v-for="idx in (5 - product.total_rating)" :key="idx"></i>
                     </div>
                     <div class="clearfix text-center mt-2 mb-4">
-                        <button class="btn btn-light border me-1">
-                            <i class="bi bi-heart"></i>
+                        <button v-if="logged" class="btn btn-light border me-1" @click="addWhishlist(product.id)">
+                            <i :class="loadingSubmitWhishlist && product.id === whishlist ? 'fas fa-circle-notch fa-spin disabled' : 'bi bi-heart'"></i>
                         </button>
                         <button class="btn btn-light border me-1">
                             <i class="bi bi-currency-exchange"></i>

@@ -262,6 +262,7 @@ return new class extends Migration
             $table->text('description');
             $table->tinyInteger('status')->default(0)->index();
             $table->foreign('order_id')->references('id')->on('orders');
+            $table->timestamps();
             $table->engine = 'InnoDB';
         });
 

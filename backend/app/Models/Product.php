@@ -95,7 +95,7 @@ class Product extends Model
                 "price_old"=> $price_old,
                 "newest"=> $newest == $index,
                 "discount"=> $discount == $index,
-                "total_rating"=> round($rating)
+                "total_rating"=> floor($rating)
             ];
         });
 

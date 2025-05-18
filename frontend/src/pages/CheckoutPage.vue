@@ -1,9 +1,97 @@
 <script setup>
 
-    import { ref } from 'vue'
+    import { ref, onMounted, inject } from 'vue'
+    import { Form, Field } from 'vee-validate'  
+    import * as yup from 'yup'
+    import Shimmer from "vue3-loading-shimmer"
+    import services from '../services'
+    import { useRouter } from 'vue-router'
 
     const payment = ref(null)
     const accept  = ref(false)
+    const loadingContent = ref(true)
+    const loadingSubmit = ref(false)
+    const props = defineProps(['loadOrder', 'setting'])
+    const billing = ref({})
+    const payments = ref([])
+    const cart = ref([])
+    const order = ref({})
+    const errorResponse = ref('')
+    const form = ref()
+    const swal = inject('$swal')
+    const router = useRouter()
+    
+    const schema = yup.object().shape({
+        email: yup.string().email().required(),
+        first_name: yup.string().required(),
+        last_name: yup.string().required(),
+        gender: yup.string().required(),
+        phone: yup.string().required(),
+        city: yup.string().required(),
+        country: yup.string().required(),
+        zip_code: yup.string().required(),
+        address: yup.string().required(),
+    })
+
+
+    async function loadData(){
+        loadingContent.value = true
+        errorResponse.value = ''
+        await services.order.billing().then((reponse) => { 
+            const data = reponse.data
+            billing.value = data.billing
+            payments.value = data.payments
+            cart.value = data.cart
+            order.value = data.order
+            payment.value = data.payments[1].id
+            setTimeout(() => { 
+                loadingContent.value = false
+            }, 1500)
+        })
+        .catch((error) => {
+            errorResponse.value = error.status === 401 ? services.expiredMessage : (error.response.data?.message || error.message)
+        });
+    }
+
+
+    const submit = (values) => { 
+        const id = order.value.id
+        values = {
+            ...values,
+            payment_id: payment.value
+        }
+        swal.fire({
+            title: "Are you sure ?",
+            text: "Please confirm that you accept these terms.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, checkout it!",
+            showLoaderOnConfirm: true,
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                loadingSubmit.value = true
+                await services.order
+                    .checkout(id, values)
+                    .then((result) => {
+                        loadingSubmit.value = false
+                        const msg = result.data.message
+                        swal.fire({
+                            title: "Success!!",
+                            text: msg,
+                            icon: "success"
+                        })
+                        props.loadOrder()
+                        router.push('/store')
+                    })
+            }
+        })
+    }
+
+    onMounted(() => {
+        loadData()
+    })
     
 </script>
 <template>
@@ -24,98 +112,143 @@
     </main>
     <main class="flex-shrink-0 mb-5">
        <div class="container">
+            <div v-if="errorResponse" class="alert alert-danger mb-4">
+                <span>{{ errorResponse }}</span>
+            </div>
             <div class="row">
-                <div class="col-md-5">
-                    <form>
+                <div class="col-md-5" v-if="loadingContent">
+                    <h3 class='text-uppercase mb-3 text-center'>Billing address</h3>
+                    <Shimmer style="height: 50rem; border-radius: 10px;" />
+                </div>
+                <div class="col-md-5" v-else>
+                    <Form ref="form" :validation-schema="schema" @submit="submit" :initial-values="billing">
                         <h3 class='text-uppercase mb-3 text-center'>Billing address</h3>
                         <div class="mb-3">
                             <label class="form-label">First Name <span class="text-danger">*</span></label>
-                            <input placeholder="Enter Your First Name" type="text" class="form-control" value="">
+                            <Field  name="first_name" v-model="billing.first_name"  v-slot="{ field, errors }">
+                                <input v-bind="field" type="text" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loadingSubmit" placeholder="Enter Your First Name">
+                                <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                    <span class="d-block" v-for="item in errors">
+                                        {{ item }}
+                                    </span>
+                                </div>
+                            </Field>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Last Name <span class="text-danger">*</span></label>
-                            <input placeholder="Enter Your Last Name" type="text" class="form-control" value="">
+                            <Field  name="last_name" v-model="billing.last_name"  v-slot="{ field, errors }">
+                                <input v-bind="field" type="text" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loadingSubmit" placeholder="Enter Your Last Name">
+                                <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                    <span class="d-block" v-for="item in errors">
+                                        {{ item }}
+                                    </span>
+                                </div>
+                            </Field>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">E-Mail Address <span class="text-danger">*</span></label>
-                            <input placeholder="Enter Your E-Mail Address" type="email" class="form-control" value="">
+                            <Field name="email" v-model="billing.email"  v-slot="{ field, errors }">
+                                <input v-bind="field" type="email" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loadingSubmit" placeholder="Enter Your E-Mail Address">
+                                <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                    <span class="d-block" v-for="item in errors">
+                                        {{ item }}
+                                    </span>
+                                </div>
+                            </Field>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Phone Number <span class="text-danger">*</span></label>
-                            <input placeholder="Enter Your Phone Number" type="tel" class="form-control" value="">
+                            <Field  name="phone" v-model="billing.phone"  v-slot="{ field, errors }">
+                                <input v-bind="field" type="text" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loadingSubmit" placeholder="Enter Your Phone Number">
+                                <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                    <span class="d-block" v-for="item in errors">
+                                        {{ item }}
+                                    </span>
+                                </div>
+                            </Field>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">City <span class="text-danger">*</span></label>
-                            <input placeholder="Enter Your City" type="text" class="form-control" value="">
+                            <Field  name="city" v-model="billing.city"  v-slot="{ field, errors }">
+                                <input v-bind="field" type="text" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loadingSubmit" placeholder="Enter Your City">
+                                <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                    <span class="d-block" v-for="item in errors">
+                                        {{ item }}
+                                    </span>
+                                </div>
+                            </Field>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Country <span class="text-danger">*</span></label>
-                            <input placeholder="Enter Your Country" type="text" class="form-control" value="">
+                            <Field  name="country" v-model="billing.country"  v-slot="{ field, errors }">
+                                <input v-bind="field" type="text" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loadingSubmit" placeholder="Enter Your Country">
+                                <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                    <span class="d-block" v-for="item in errors">
+                                        {{ item }}
+                                    </span>
+                                </div>
+                            </Field>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Zip Code <span class="text-danger">*</span></label>
-                            <input placeholder="Enter Your Zip Code" type="text" class="form-control" value="">
+                            <Field  name="zip_code" v-model="billing.zip_code"  v-slot="{ field, errors }">
+                                <input v-bind="field" type="text" class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loadingSubmit" placeholder="Enter Your Zip Code">
+                                <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                    <span class="d-block" v-for="item in errors">
+                                        {{ item }}
+                                    </span>
+                                </div>
+                            </Field>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Street Address <span class="text-danger">*</span></label>
-                            <textarea rows="3" placeholder='Enter Your Street Address' class="form-control"></textarea>
+                            <Field  name="address" v-model="billing.address"  v-slot="{ field, errors }">
+                                <textarea rows="3" v-bind="field"  placeholder='Enter Your Street Address' class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loadingSubmit" ></textarea>
+                                <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                    <span class="d-block" v-for="item in errors">
+                                        {{ item }}
+                                    </span>
+                                </div>
+                            </Field>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Notes </label>
-                            <textarea rows="3" placeholder='Enter Your Notes' class="form-control"></textarea>
+                            <Field  name="notes" v-model="billing.notes"  v-slot="{ field, errors }">
+                                <textarea rows="3" v-bind="field"  placeholder='Enter Your Notes' class="form-control" :class="errors.length > 0 ? 'is-invalid' : ''" :disabled="loadingSubmit" ></textarea>
+                                <div :class="errors.length > 0 ? 'invalid-feedback' : ''">
+                                    <span class="d-block" v-for="item in errors">
+                                        {{ item }}
+                                    </span>
+                                </div>
+                            </Field>
                         </div>
-                    </form>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-4" :class="!accept || loadingSubmit ? 'disabled' : ''">
+                            <i :class="loadingSubmit ? 'fas fa-circle-notch fa-spin mb-1 me-1' : 'bi bi-cart-check mb-1 me-1'"></i> Place order
+                        </button>
+                    </Form>
                 </div>
-                 <div class="col-md-7">
+                <div class="col-md-7" v-if="loadingContent">
+                    <h3 class='text-uppercase mb-3 text-center'>Details Order</h3>
+                    <Shimmer style="height: 50rem; border-radius: 10px;" />
+                </div>
+                <div class="col-md-7" v-else>
                     <h3 class='text-uppercase mb-3 text-center'>Details Order</h3>
                     <div class="card">
                         <div class="card-body">
-                            <div class="row mb-2">
+                            <div class="row mb-2" v-for="product in cart">
                                 <div class="col-md-3 text-center">
-                                    <img class="img-responsive" width="120" src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product01.png"  alt="image" />
+                                    <img class="img-responsive" width="120" :src="product.image"  alt="image" />
                                 </div>
                                 <div class="col-md-7 text-start p-3">
                                     <a href='#' class='text-decoration-none text-uppercase text-muted d-block mt-3'>
-                                        <strong>product name goes here</strong>
+                                        <strong>{{ product.name }}</strong>
                                     </a>
                                     <span class='d-block mb-2 text-danger fw-bold'>
-                                        1 x <strong>$980.00</strong>
+                                        {{ parseInt(product.total_item) }} x <strong>$ {{ parseFloat(product.price).toFixed(2) }}</strong>
                                     </span>
                                 </div>
                                 <div class="col-md-2 text-end p-3">
-                                    <h6 class='text-danger fw-bold mt-4'>$980.00</h6>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-3 text-center">
-                                    <img class="img-responsive" width="120" src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product02.png"  alt="image" />
-                                </div>
-                                <div class="col-md-7 text-start p-3">
-                                    <a href='#' class='text-decoration-none text-uppercase text-muted d-block mt-3'>
-                                        <strong>product name goes here</strong>
-                                    </a>
-                                    <span class='d-block mb-2 text-danger fw-bold'>
-                                        2 x <strong>$980.00</strong>
-                                    </span>
-                                </div>
-                                <div class="col-md-2 text-end p-3">
-                                    <h6 class='text-danger fw-bold mt-4'>$1960.00</h6>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-md-3 text-center">
-                                    <img class="img-responsive" width="120" src="https://5an9y4lf0n50.github.io/demo-images/demo-commerce/product03.png"  alt="image" />
-                                </div>
-                                <div class="col-md-7 text-start p-3">
-                                    <a href='#' class='text-decoration-none text-uppercase text-muted d-block mt-3'>
-                                        <strong>product name goes here</strong>
-                                    </a>
-                                    <span class='d-block mb-2 text-danger fw-bold'>
-                                        3 x <strong>$980.00</strong>
-                                    </span>
-                                </div>
-                                <div class="col-md-2 text-end p-3">
-                                    <h6 class='text-danger fw-bold mt-4'>$2940.00</h6>
+                                    <h6 class='text-danger fw-bold mt-4'>$ {{ parseFloat(product.subtotal).toFixed(2) }}</h6>
                                 </div>
                             </div>
                             <div class='border-top'></div>
@@ -124,7 +257,7 @@
                                     <h6 class='text-start text-muted fw-bold text-uppercase'>subtotal</h6>
                                 </div>
                                 <div class="col-md-9 text-end">
-                                    <h6 class='text-danger fw-bold'>$5,880.00</h6>
+                                    <h6 class='text-danger fw-bold'>$ {{ parseFloat(order.subtotal).toFixed(2) }}</h6>
                                 </div>
                             </div>
                             <div class="row mb-1 p-2 mt-2">
@@ -132,15 +265,23 @@
                                     <h6 class='text-start text-muted fw-bold text-uppercase'>Shiping</h6>
                                 </div>
                                 <div class="col-md-9 text-end">
-                                    <h6 class='text-danger fw-bold'>$100.00</h6>
+                                    <h6 class='text-danger fw-bold'>$ {{ parseFloat(order.total_shipment).toFixed(2) }}</h6>
                                 </div>
                             </div>
                             <div class="row mb-1 p-2 mt-2">
                                 <div class="col-md-3">
-                                    <h6 class='text-start text-muted fw-bold text-uppercase'>Taxes (5%)</h6>
+                                    <h6 class='text-start text-muted fw-bold text-uppercase'>Taxes ( {{ parseFloat(setting.taxes_value).toFixed(2) }} %)</h6>
                                 </div>
                                 <div class="col-md-9 text-end">
-                                    <h6 class='text-danger fw-bold'>$294.00</h6>
+                                    <h6 class='text-danger fw-bold'>$ {{ parseFloat(order.total_taxes).toFixed(2) }}</h6>
+                                </div>
+                            </div>
+                            <div class="row mb-1 p-2 mt-2">
+                                <div class="col-md-3">
+                                    <h6 class='text-start text-muted fw-bold text-uppercase'>Discount ( {{ parseFloat(setting.discount_value).toFixed(2) }} %)</h6>
+                                </div>
+                                <div class="col-md-9 text-end">
+                                    <h6 class='text-success fw-bold'>$ {{ parseFloat(order.total_discount).toFixed(2) }}</h6>
                                 </div>
                             </div>
                             <div class="row mb-1 p-2 mt-2">
@@ -148,58 +289,30 @@
                                     <h3 class='text-start text-muted fw-bold text-uppercase'>Total</h3>
                                 </div>
                                 <div class="col-md-9 text-end">
-                                    <h6 class='text-danger fw-bold'>$6274.00</h6>
+                                    <h6 class='text-danger fw-bold'>$ {{ parseFloat(order.total_paid).toFixed(2) }}</h6>
                                 </div>
                             </div>
                             <div class="row mb-1 p-2 mt-2">
                                 <div class="col-md-12">
-                                    <form>
+                                    <div v-for="p in payments">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="payment" v-model="payment" :value="1">
+                                            <input class="form-check-input" type="radio" name="payment" v-model="payment" :value="p.id">
                                             <label class="form-check-label">
-                                                Direct Bank Transfer
+                                                {{ p.name }}
                                             </label>
                                         </div>
-                                        <p class="d-block p-1" v-if="payment === 1">
+                                        <p class="d-block p-1" v-if="payment === p.id">
                                             <small>
-                                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                                {{ p.description }}
                                             </small>
                                         </p>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="payment" v-model="payment" :value="2">
-                                            <label class="form-check-label">
-                                                Cheque Payment
-                                            </label>
-                                        </div>
-                                         <p class="d-block p-1" v-if="payment === 2">
-                                            <small>
-                                                Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, 
-                                                making it over 2000 years old. Richard McClintoc, There are many variations of passages of Lorem Ipsum available, 
-                                                but the majority have suffered alteration in some form
-                                            </small>
-                                        </p>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="payment" v-model="payment" :value="3">
-                                            <label class="form-check-label">
-                                                Paypal System
-                                            </label>
-                                        </div>
-                                        <p class="d-block p-1" v-if="payment === 3"> 
-                                            <small>
-                                               It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing 
-                                               software like Aldus PageMaker including versions of Lorem Ipsum.
-                                            </small>
-                                        </p>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" v-model="accept"  value="">
-                                            <label class="form-check-label">
-                                                I've read and accept the terms & conditions
-                                            </label>
-                                        </div>
-                                        <button class="btn btn-primary btn-lg w-100 mt-4" :class="!accept ? 'disabled' : ''">
-                                            <i class="bi bi-cart-check mb-1 me-1"></i> Place order
-                                        </button>
-                                    </form>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" v-model="accept"  value="">
+                                        <label class="form-check-label">
+                                            I've read and accept the terms & conditions
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

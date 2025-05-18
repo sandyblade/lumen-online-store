@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Faker\Factory as Faker;
 use App\Models\User;
 use App\Models\Authentication;
+use Carbon\Carbon;
 
 class AuthController extends AppController
 {
@@ -32,7 +33,7 @@ class AuthController extends AppController
 
         $credentials = $request->only(['email', 'password']);
 
-        if (!$token = Auth::attempt($credentials)) {
+        if (!$token = Auth::attempt($credentials, ['exp' => Carbon::now()->addDays(30)->timestamp])) {
             return response()->json(['message' => 'These credentials do not match our records.'], 401);
         }
 

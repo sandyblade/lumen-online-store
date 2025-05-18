@@ -24,7 +24,7 @@
     const page = ref(1)
     const router = useRouter()
     const pagination = ref(null)
-
+    const props = defineProps(['loadOrder', 'setting'])
 
     function loadProduct(){
 
@@ -35,7 +35,7 @@
         let params = {
             sort: sortBy.value,
             limit: limit.value,
-            page: page.value,
+            page: parseInt(page.value),
             price: `${fPrices.join("|")}`
         }
 
@@ -300,9 +300,9 @@
                                         </span>  
                                     </div>
                                     <div class="card-footer bg-transparent text-center border-top-0" v-if="auth_logged">
-                                        <a href="#" class="btn btn-primary text-white w-100 mb-2">
+                                        <router-link :to="`/cart/${product.id}`" class="btn btn-primary text-white w-100 mb-2">
                                             <i class="bi bi-cart-plus mb-1 me-1"></i>Add To Cart
-                                        </a>
+                                        </router-link>
                                     </div>
                                 </div>
                             </div>
@@ -310,9 +310,9 @@
                         <div class="row mt-5">
                             <div class="col-md-9">   
                                 <Vue3BsPaginate
-                                    :total="products.total_filtered"
+                                    :total="parseInt(products.total_filtered)"
                                     v-model="page"
-                                    :perPage="limit"
+                                    :perPage="parseInt(products.limit)"
                                     :onChange="loadProduct"
                                     alignment="left"
                                     ref="pagination"

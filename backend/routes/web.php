@@ -57,11 +57,14 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     # Order Page
     $router->get('order/billing', 'OrderController@billing');
+    $router->get('order/product', 'OrderController@product');
+    $router->get('order/review/{id}', 'OrderController@listReview');
     $router->get('order/cart/{id}', 'OrderController@cart');
     $router->post('order/cart/{id}', 'OrderController@add');
     $router->delete('order/cart/{id}', 'OrderController@delete');
     $router->get('order/wishlist/{id}', 'OrderController@wishlist');
     $router->get('order/detail/{id}', 'OrderController@detail');
+    $router->get('order/cancel', 'OrderController@cancel');
     $router->post('order/review/{id}', 'OrderController@review');
     $router->post('order/checkout/{id}', 'OrderController@checkout');
 

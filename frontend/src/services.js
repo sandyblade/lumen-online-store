@@ -101,6 +101,42 @@ const store = {
     },
 }
 
+const order = {
+    billing: async () => {
+        return await http().get(`/api/order/billing`)
+    },
+    product: async () => {
+        return await http().get(`/api/order/product`)
+    },
+    cancel: async () => {
+        return await http().get(`/api/order/cancel`)
+    },
+    cartDetail: async (id) => {
+        return await http().get(`/api/order/cart/${id}`)
+    },
+    cartAdd: async (id, data) => {
+        return await http().post(`/api/order/cart/${id}`, data)
+    },
+    cartDelete: async (id) => {
+        return await http().delete(`/api/order/cart/${id}`)
+    },
+    wishlist: async (id) => {
+        return await http().get(`/api/order/wishlist/${id}`)
+    },
+    detail: async (id) => {
+        return await http().get(`/api/order/detail/${id}`)
+    },
+    listReview: async (id) => {
+        return await http().get(`/api/order/review/${id}`)
+    },
+    createReview: async (id, data) => {
+        return await http().post(`/api/order/review/${id}`, data)
+    },
+    checkout: async (id, data) => {
+        return await http().post(`/api/order/checkout/${id}`, data)
+    },
+}
+
 export default {
     ping,
     getFile,
@@ -108,5 +144,6 @@ export default {
     auth,
     profile,
     store,
-    home
+    home,
+    order
 }

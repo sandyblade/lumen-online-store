@@ -5,6 +5,7 @@
     import SliderComponent from '../components/SliderComponent.vue'
     import BestSellerComponent from '../components/BestSellerComponent.vue'  
     import services from '../services';
+    
 
     const loading = ref(true)
     const categories = ref([])
@@ -13,6 +14,8 @@
     const bestSellers = ref([])
     const activeTab1 = ref(0)
     const activeTab2 = ref(0)
+    const props = defineProps(['loadOrder', 'setting'])
+    
 
     async function loadData(){
         loading.value = true
@@ -46,7 +49,7 @@
     }
     
     onMounted(() => {
-       loadData()
+        loadData()
     })
 
     
@@ -117,7 +120,7 @@
                 </div>
             </div>  
             <div class="col-md-12">
-                <SliderComponent :products="products" />
+                <SliderComponent :products="products" :loadOrder="loadOrder" />
             </div>
         </div>
       </div>    
@@ -206,7 +209,7 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <SliderComponent :products="topSellings" />
+                <SliderComponent :products="topSellings" :loadOrder="loadOrder" />
             </div>
         </div>
       </div>    
