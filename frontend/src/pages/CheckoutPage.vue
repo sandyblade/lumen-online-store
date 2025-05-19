@@ -83,7 +83,7 @@
                             icon: "success"
                         })
                         props.loadOrder()
-                        router.push('/store')
+                        router.push('/order')
                     })
             }
         })

@@ -56,6 +56,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('shop/filter', 'ShopController@filter');
 
     # Order Page
+    $router->get('order/list', 'OrderController@list');
     $router->get('order/billing', 'OrderController@billing');
     $router->get('order/product', 'OrderController@product');
     $router->get('order/review/{id}', 'OrderController@listReview');

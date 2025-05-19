@@ -35,6 +35,38 @@ class OrderController extends AppController
         $this->middleware('auth:api');
     }
 
+    public function list(Request $request)
+    {
+        $user       = Auth::User();
+        $order      = $request->input("order", "id");
+        $dir        = $request->input("dir", "desc");
+        $limit      = $request->input("limit", 10);
+        $page       = $request->input("page", 1);
+        $offset     = (($page - 1) * $limit);
+        $orders     =  Order::where("user_id", $user->id);
+        $total_all  =  $orders->count();
+
+        if ($request->input("search")) {
+            $orders = $orders->where(function ($query) use ($request) {
+                $query->where('invoice_number', "like", "%" . $request->search . "%");
+            });
+        }
+
+        $total_filtered = $orders->count();
+        $orders = $orders->limit($limit)->offset($offset)->orderBy($order, $dir)->get();
+
+        $payload = [
+            "list"              => $orders,
+            "total_all"         => $total_all,
+            "total_filtered"    => $total_filtered,
+            "limit"             => $limit,
+            "page"              => $page
+        ];
+
+        return response()->json($payload);
+
+    }
+
     public function billing()
     {
         

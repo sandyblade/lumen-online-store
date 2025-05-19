@@ -67,7 +67,8 @@
         if (localStorage.getItem('auth_user')) {
             localStorage.removeItem('auth_user')
         }
-        
+
+        router.push("/")
         setTimeout(() => { location.reload() })
     }
 

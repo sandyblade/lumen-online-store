@@ -13,6 +13,7 @@ import RegisterPage from "./pages/RegisterPage.vue"
 import ResetPasswordPage from "./pages/ResetPasswordPage.vue"
 import StorePage from "./pages/StorePage.vue"
 import OrderPage from "./pages/OrderPage.vue";
+import OrderDetailPage from "./pages/OrderDetailPage.vue";
 
 const logged = localStorage.getItem('auth_token') !== null && localStorage.getItem('auth_user') !== null
 
@@ -27,6 +28,12 @@ const routes = [
         path: "/order",
         name: "Order",
         component: logged ? OrderPage : ErrorPage,
+        meta: { layout: AppComponent },
+    },
+    {
+        path: "/order/:id",
+        name: "OrderDetail",
+        component: logged ? OrderDetailPage : ErrorPage,
         meta: { layout: AppComponent },
     },
     {
