@@ -5,7 +5,7 @@
     import * as yup from 'yup'
     import Shimmer from "vue3-loading-shimmer"
     import services from '../services'
-    import { useRouter } from 'vue-router'
+    import { useRouter, useRoute } from 'vue-router'
 
     const payment = ref(null)
     const accept  = ref(false)
@@ -20,6 +20,7 @@
     const form = ref()
     const swal = inject('$swal')
     const router = useRouter()
+    const route = useRoute()
     
     const schema = yup.object().shape({
         email: yup.string().email().required(),
@@ -35,9 +36,10 @@
 
 
     async function loadData(){
+        let id = route.params.id
         loadingContent.value = true
         errorResponse.value = ''
-        await services.order.billing().then((reponse) => { 
+        await services.order.billing(id).then((reponse) => { 
             const data = reponse.data
             billing.value = data.billing
             payments.value = data.payments

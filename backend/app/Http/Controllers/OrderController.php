@@ -67,11 +67,11 @@ class OrderController extends AppController
 
     }
 
-    public function billing()
+    public function billing($id)
     {
         
         $user = Auth::User();
-        $order = Order::where("user_id", $user->id)->where("status", 0)->orderBy("id", "desc")->first();
+        $order = Order::where("user_id", $user->id)->with('payment')->where('id', $id)->orderBy("id", "desc")->first();
         $checkBilling = OrderBilling::where("order_id", $order->id)->first();
         $payments = Payment::where("status", 1)->orderBy("name")->get();
 

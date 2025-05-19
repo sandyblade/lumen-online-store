@@ -247,8 +247,8 @@
                         <small>{{ cart.length }} Item(s) selected</small>
                         <h5>SUBTOTAL: $ {{ parseInt(order.subtotal) }}</h5>
                     </div>
-                    <div class="cart-btns">
-                        <a href="#" @click="(event) => redirectTo(event, '/checkout')" class="text-decoration-none">Checkout <i class="bi bi-arrow-right-circle ms-1"></i></a>
+                    <div class="cart-btns" v-if="order">
+                        <a href="#" @click="(event) => redirectTo(event, `/checkout/${order.id}`)" class="text-decoration-none">Checkout <i class="bi bi-arrow-right-circle ms-1"></i></a>
                         <a href="#" @click="(event) => cancel(event)"   class="text-decoration-none">Cancel Order <i class="bi bi-ban ms-1"></i></a>
                     </div>
                 </div>

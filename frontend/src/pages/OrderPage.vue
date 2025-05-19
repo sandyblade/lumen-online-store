@@ -3,7 +3,7 @@
     import { Vue3BsPaginate } from 'vue3-bootstrap-paginate';
     import queryString from 'query-string'
     import { useRouter } from 'vue-router'
-    import { ref, onMounted } from 'vue'
+    import { ref, onMounted, inject } from 'vue'
     import services from '../services';
 
     const loading = ref(true)
@@ -17,6 +17,8 @@
     const router = useRouter()
     const pagination = ref(null)
     const rows = ref([])
+    const swal = inject('$swal')
+    const props = defineProps(['loadOrder', 'setting'])
 
     function loadData(){
 
@@ -50,7 +52,7 @@
                 rows.value = data.list
                 setTimeout(() => {
                     loading.value = false    
-                }, 1000)
+                }, 500)
             })
             .catch((error) => {
                 console.log(error)
@@ -59,8 +61,32 @@
 
     }
 
-    function remove(id){
-        
+    function remove(){
+        swal.fire({
+            title: "Are you sure ?",
+            text: "Please confirm that you accept these terms.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, cancel it!",
+            showLoaderOnConfirm: true,
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await services.order
+                    .cancel()
+                    .then((result) => {
+                        const msg = result.data.message
+                        swal.fire({
+                            title: "Success!!",
+                            text: msg,
+                            icon: "success"
+                        })
+                        props.loadOrder()
+                        loadData()
+                    })
+            }
+        })
     }
 
     function detail(id){
@@ -161,7 +187,7 @@
                                 <th class="text-center">No</th>
                                 <th>Order Date</th>
                                 <th>Order Number</th>
-                                <th class="text-center">Total Product</th>
+                                <th class="text-center">Total Item</th>
                                 <th class="text-center">Total Payment</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-center">Action</th>
@@ -191,7 +217,7 @@
                                         <span class="badge bg-success">Completed</span>
                                     </span>
                                     <span v-else>
-                                        <span class="badge bg-danger">Wating Checkout</span>
+                                        <span class="badge bg-danger">Draft</span>
                                     </span>
                                 </td>
                                 <td class="text-center">

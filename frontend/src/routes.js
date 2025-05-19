@@ -27,17 +27,19 @@ const routes = [
     {
         path: "/order",
         name: "Order",
+        props: { loadOrder: null, setting: null },
         component: logged ? OrderPage : ErrorPage,
         meta: { layout: AppComponent },
     },
     {
         path: "/order/:id",
         name: "OrderDetail",
+        props: { loadOrder: null, setting: null },
         component: logged ? OrderDetailPage : ErrorPage,
         meta: { layout: AppComponent },
     },
     {
-        path: "/checkout",
+        path: "/checkout/:id",
         name: "Checkout",
         props: { loadOrder: null, setting: null },
         component: logged ? CheckoutPage : ErrorPage,

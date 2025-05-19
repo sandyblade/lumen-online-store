@@ -105,8 +105,8 @@ const order = {
     list: async (params) => {
         return await http().get(`/api/order/list?${params}`)
     },
-    billing: async () => {
-        return await http().get(`/api/order/billing`)
+    billing: async (id) => {
+        return await http().get(`/api/order/billing/${id}`)
     },
     product: async () => {
         return await http().get(`/api/order/product`)

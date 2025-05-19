@@ -57,7 +57,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     # Order Page
     $router->get('order/list', 'OrderController@list');
-    $router->get('order/billing', 'OrderController@billing');
+    $router->get('order/billing/{id}', 'OrderController@billing');
     $router->get('order/product', 'OrderController@product');
     $router->get('order/review/{id}', 'OrderController@listReview');
     $router->get('order/cart/{id}', 'OrderController@cart');
