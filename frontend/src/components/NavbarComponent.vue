@@ -11,7 +11,7 @@
             <div class="navbar-collapse" id="basic-navbar-nav">
                 <div class="main-nav navbar-nav">
                     <router-link to="/" class="nav-link">Home</router-link>
-                    <router-link to="/store" class="nav-link">Hot Deals</router-link>
+                    <router-link to="/store" class="nav-link">Store</router-link>
                     <router-link :to="`/store?category=${category.id}`" class="nav-link" v-for="category in categories">
                         {{ category.name }}
                     </router-link>

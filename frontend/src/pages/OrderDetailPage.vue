@@ -62,7 +62,7 @@
             </div>
             <div class="row">
                 <div class="col-md-5" v-if="loading">
-                    <h3 class='text-uppercase mb-3 text-center'>Details</h3>
+                    <h3 class='text-uppercase mb-3 text-center'>Details Invoice</h3>
                     <Shimmer style="height: 50rem; border-radius: 10px;" />
                 </div>
                 <div class="col-md-5" v-else>
